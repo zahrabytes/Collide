@@ -1,0 +1,8 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+
+$fontFamily: "Inter", sans-serif;
+$fluidFontSize: clamp(
+  0.7813rem,
+  0.7589rem + 0.1116vi,
+  0.9375rem
+); // https://utopia.fyi/type/calculator/?c=320,12.5,1.125,2560,15,1.125,10,10,&s=0.75%7C0.5%7C0.25,1.5%7C2%7C3%7C4%7C6,s-l&g=s,l,xl,12

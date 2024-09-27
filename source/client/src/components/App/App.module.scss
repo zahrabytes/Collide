@@ -1,0 +1,18 @@
+@use "../_reset";
+@use "../colors" as colors;
+@use "../fonts" as fonts;
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  color: colors.$foreground;
+  background: colors.$background;
+  font-size: fonts.$fluidFontSize;
+  font-family: fonts.$fontFamily;
+}
+
+.header {
+  font-size: 2em;
+}
