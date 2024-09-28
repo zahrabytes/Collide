@@ -1,0 +1,33 @@
+@use "../_colors" as colors;
+
+%button {
+  color: colors.$foreground;
+  border-radius: 1em;
+  border: none;
+  font-size: 0.875em;
+  font-weight: 500;
+  gap: 0.5em;
+  cursor: pointer;
+  transition: 0.3s ease;
+
+  &:hover {
+    background: lighten(colors.$elevated2, 10%);
+  }
+}
+
+.primary {
+  @extend %button;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75em;
+  background: colors.$elevated2;
+}
+
+.secondary {
+  @extend %button;
+  background: none;
+  outline: 1px solid lighten(colors.$elevated2, 10%);
+  width: 3.75em;
+  height: 3.75em;
+}

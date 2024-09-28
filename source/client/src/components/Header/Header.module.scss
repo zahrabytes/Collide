@@ -1,0 +1,42 @@
+@use "../colors" as colors;
+
+.header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  gap: 2em;
+
+  .logo {
+    height: 1.75em;
+    cursor: pointer;
+  }
+
+  .search {
+    width: 50em;
+    height: 3em;
+    border-radius: 0.75em;
+    border: none;
+    padding: 1em 1.5em;
+    font-weight: 350;
+    background: colors.$elevated1;
+    color: colors.$foreground;
+    outline: 1px solid transparent;
+    transition: 0.3s ease;
+
+    &:hover {
+      background: colors.$elevated2;
+    }
+
+    &:focus {
+      background: colors.$elevated2;
+      outline: 1px solid lighten(colors.$elevated3, 10%);
+    }
+  }
+}
+
+.right {
+}

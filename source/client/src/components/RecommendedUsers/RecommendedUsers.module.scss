@@ -1,0 +1,80 @@
+@use "../_colors" as colors;
+
+.container {
+  background: colors.$elevated1;
+  border-radius: 1em;
+  padding: 1.5em 0.75em;
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+}
+
+.h2 {
+  font-size: 1.25em;
+  font-weight: 550;
+  margin: 0 0.75em;
+}
+
+.users {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+}
+
+.userCard {
+  padding: 0.75em;
+  display: flex;
+  gap: 1em;
+  align-items: center;
+  border-radius: 1em;
+  cursor: pointer;
+  transition: 0.3s ease;
+
+  &:hover {
+    background: colors.$elevated2;
+  }
+
+  .avatar {
+    width: 3em;
+    height: 3em;
+    border-radius: 50%;
+  }
+
+  .right {
+    display: flex;
+    gap: 1em;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .name {
+    font-weight: 550;
+    font-size: 0.975em;
+  }
+
+  .username {
+    font-size: 0.875em;
+    color: gray;
+  }
+
+  .follow {
+    background: aliceblue;
+    border: none;
+    border-radius: 100em;
+    padding: 0.325em 1.35em;
+    cursor: pointer;
+  }
+}
+
+.link {
+  margin: 0 0.75em;
+  color: #1d96e0;
+  font-weight: 550;
+  text-decoration: none;
+  transition: 0.3s ease;
+
+  &:hover {
+    filter: brightness(1.25);
+  }
+}
