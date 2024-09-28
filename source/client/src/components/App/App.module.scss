@@ -19,6 +19,15 @@
   gap: 2em;
 }
 
+.gridContainer {
+  display: grid;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+  grid-template-columns: repeat(3, 1fr); /* Always create 2 columns */
+  gap: 1.5em;
+}
+
 .divider {
   height: 1px;
   background: colors.$elevated3;

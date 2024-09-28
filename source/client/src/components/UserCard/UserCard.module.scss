@@ -1,0 +1,83 @@
+.profile-card {
+  display: flex;
+  flex-direction: column;
+  background-color: #1c2730;
+  border-radius: 1em;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  color: #000;
+  transition: transform 0.3s ease, box-shadow 0.3s ease; /* Add transition for smooth hover effect */
+
+  &:hover {
+    transform: scale(1.05); /* Slightly scale up the card */
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2); /* Increase shadow on hover */
+  }
+}
+
+.profile-header {
+  display: flex;
+  align-items: flex-start; /* Align items at the start */
+  margin-bottom: 20px;
+}
+
+.profile-pic {
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  margin-right: 20px;
+  border: 2px solid #e0e0e0;
+}
+
+.profile-info {
+  flex-grow: 1;
+}
+
+.profile-info h3 {
+  margin: 0;
+  font-size: 1.5em;
+  color: #fff;
+}
+
+.profile-info p {
+  margin: 5px 0;
+  color: #fff;
+  display: flex;
+  align-items: center;
+}
+
+.bio {
+  margin: 10px 0;
+  font-style: italic;
+  color: #555;
+}
+
+.icon {
+  margin-right: 8px;
+  color: #63768a;
+}
+
+.tags-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 0.75em;
+  margin-top: 10px;
+}
+
+.tag {
+  padding: 0.45em 1.4em;
+  cursor: pointer;
+  border-radius: 100em;
+  font-size: 0.8em;
+  color: #4493f8;
+  font-weight: 500;
+  transition: 0.3s ease;
+  background: rgba(#4493f8, 0.1);
+
+  &:hover {
+    background: rgba(#4493f8, 0.25);
+  }
+}
