@@ -6,7 +6,7 @@ from sentence_transformers import SentenceTransformer
 from qdrant_client import QdrantClient
 
 client = QdrantClient(
-    url="https://33058675-b93f-4a25-add3-6391fac8678c.europe-west3-0.gcp.cloud.qdrant.io:6333", 
+    url=SECRET_URL, 
     api_key="Ymack1QsKvvS7VqnC8jXd-g7reVcvQVpwrQmIuClLguPRR0xn_xohQ",
 )
 
