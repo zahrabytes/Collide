@@ -1,6 +1,7 @@
 import { Header } from "../Header/Header";
 import { Posts } from "../Posts/Posts";
 import { Profile } from "../Profile/Profile";
+import { TrendingTopics } from "../TrendingTopics/TrendingTopics";
 import { RecommendedUsers } from "../RecommendedUsers/RecommendedUsers";
 import styles from "./App.module.scss";
 
@@ -16,7 +17,9 @@ function App() {
             <RecommendedUsers />
           </aside>
           <Posts />
-          <section className={styles.right}>Right Section</section>
+          <section className={styles.right}>
+            <TrendingTopics />
+          </section>
         </main>
       </div>
     </div>

@@ -5,7 +5,7 @@ function Profile() {
     <div className={styles.profile}>
       <img
         className={styles.background}
-        src="https://picsum.photos/720/340"
+        src="https://picsum.photos/1080/400"
         alt=""
       />
       <div className={styles.avatarContainer}>

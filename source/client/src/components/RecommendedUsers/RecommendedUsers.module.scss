@@ -10,7 +10,7 @@
 }
 
 .h2 {
-  font-size: 1.25em;
+  font-size: 1.2em;
   font-weight: 550;
   margin: 0 0.75em;
 }
@@ -35,8 +35,8 @@
   }
 
   .avatar {
-    width: 3em;
-    height: 3em;
+    width: 2.75em;
+    height: 2.75em;
     border-radius: 50%;
   }
 
@@ -50,18 +50,19 @@
 
   .name {
     font-weight: 550;
-    font-size: 0.975em;
+    font-size: 0.9em;
   }
 
   .username {
-    font-size: 0.875em;
-    color: gray;
+    font-size: 0.8em;
+    color: colors.$grey;
   }
 
   .follow {
     background: aliceblue;
     border: none;
     border-radius: 100em;
+    font-size: 0.925em;
     padding: 0.325em 1.35em;
     cursor: pointer;
   }
@@ -69,7 +70,8 @@
 
 .link {
   margin: 0 0.75em;
-  color: #1d96e0;
+  color: colors.$linkColor;
+  font-size: 0.925em;
   font-weight: 550;
   text-decoration: none;
   transition: 0.3s ease;

@@ -32,18 +32,19 @@
 }
 
 .name {
-  font-size: 1.25em;
+  font-size: 1.1em;
   font-weight: 550;
 }
 
 .username {
-  font-size: 1em;
+  font-size: 0.925em;
   font-weight: 400;
   color: colors.$grey;
 }
 
 .bio {
-  margin-top: 0.5em;
+  margin-top: 1em;
+  font-size: 0.95em;
 }
 
 .stats {
@@ -61,12 +62,12 @@
 }
 
 .number {
-  font-size: 1.1em;
+  font-size: 1em;
   font-weight: 550;
 }
 
 .label {
-  font-size: 1em;
+  font-size: 0.9em;
   font-weight: 400;
   color: colors.$grey;
 }
@@ -81,10 +82,10 @@
 }
 
 .link {
-  color: #1d96e0;
+  color: colors.$linkColor;
   font-weight: 550;
   text-decoration: none;
-  font-size: 1.025em;
+  font-size: 0.925em;
   display: inline-block;
   margin: 1.5em auto;
   transition: 0.3s ease;
