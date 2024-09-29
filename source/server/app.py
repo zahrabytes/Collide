@@ -226,7 +226,7 @@ def get_recommended_users(user_id):
                         },
                     ],
                 },
-                limit=20  # Adjust the limit as needed
+                limit=8  # Adjust the limit as needed
             )
             
             results = [
