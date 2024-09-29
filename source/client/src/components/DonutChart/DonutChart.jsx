@@ -1,15 +1,15 @@
 import { Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Title, Tooltip, Legend } from "chart.js";
 
-const DonutChart = () => {
+const DonutChart = ({ interests }) => {
   ChartJS.register(ArcElement, Tooltip, Legend, Title);
 
   const data = {
-    labels: ["Red", "Orange", "Green", "Blue", "Purple"],
+    labels: Object.keys(interests),
     datasets: [
       {
-        label: "Votes",
-        data: [12, 19, 3, 5, 10],
+        label: "Score",
+        data: Object.values(interests),
         backgroundColor: [
           "rgba(255, 99, 132, 0.75)",
           "rgba(255, 159, 64, 0.75)",

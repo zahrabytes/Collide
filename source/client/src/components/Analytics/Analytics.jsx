@@ -5,18 +5,18 @@ import { LineChart } from "../LineChart/LineChart";
 import styles from "./Analytics.module.scss";
 
 function Analytics({ analytics }) {
-  console.log(analytics);
+  const { topicsMatch, interests } = analytics;
 
   return (
     <>
       <div className={styles.barContainer}>
         <h2 className={styles.h2}>Trending Topics Match</h2>
-        <BarChart />
+        <BarChart topicsMatch={topicsMatch} />
       </div>
       <div className={styles.donutContainer}>
         <h2 className={styles.h2}>Favorite Topics</h2>
         <div className={styles.donutWrapper}>
-          <DonutChart />
+          <DonutChart interests={interests} />
         </div>
       </div>
       <div className={styles.lineContainer}>

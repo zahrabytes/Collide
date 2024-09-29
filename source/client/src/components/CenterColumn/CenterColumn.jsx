@@ -6,10 +6,9 @@ import { useSummary } from "../../hooks/useSummary";
 import { useRecommendedPosts } from "../../hooks/useRecommendedPosts";
 import { useUser } from "../../hooks/useUser";
 import { useAnalytics } from "../../hooks/useAnalytics";
-import { useTrendingTopics } from "../../hooks/useTrendingTopics";
 import styles from "./CenterColumn.module.scss";
 
-function CenterColumn({ userId }) {
+function CenterColumn({ userId, trendingTopics }) {
   const [selectedPage, setselectedPage] = useState("suggested");
   const updateSelectedPage = (page) => {
     return () => setselectedPage(page);
@@ -18,8 +17,7 @@ function CenterColumn({ userId }) {
   const posts = useRecommendedPosts(userId);
   const user = useUser(userId);
 
-  const trendingTopics = useTrendingTopics();
-  const analytics = useAnalytics(userId, trendingTopics);
+  const analytics = useAnalytics(userId, trendingTopics.slice(0, 10).join(""));
 
   const summary = useSummary(userId);
 
