@@ -4,10 +4,16 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBuilding, faBriefcase, faMapMarkerAlt, faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 
 function UserCard({ user }) {
+
+  const handleCardClick = () => {
+    // Navigate to the user detail page and pass the user data via state
+    window.location.href = `/${user.id}`;
+  };
+
   return (
-    <div className={styles['profile-card']}>
+    <div className={styles['profile-card']} onClick={handleCardClick}>
       <div className={styles['profile-header']}>
-        <img className={styles['profile-pic']} src="https://avatar.iran.liara.run/public" alt={user.name} />
+        <img className={styles['profile-pic']} src={user.profile_picture} alt={user.name} />
         <div className={styles['profile-info']}>
           {user.prefix && <h3>{user.prefix} {user.name}</h3>}
           {!user.prefix && <h3>{user.name}</h3>}
