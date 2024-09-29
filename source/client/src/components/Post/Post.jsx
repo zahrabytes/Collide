@@ -7,7 +7,32 @@ import { faThumbsUp } from "@fortawesome/free-solid-svg-icons";
 import { faThumbsDown } from "@fortawesome/free-solid-svg-icons";
 import { faArrowUpFromBracket } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "../ActionButton/ActionButton";
+import { useUser } from "../../hooks/useUser";
 import styles from "./Post.module.scss";
+
+const formatDate = (dateString) => {
+  const replaceSecondOccurrence = (str, substr, replacement) => {
+    let parts = str.split(substr);
+    if (parts.length > 2)
+      return parts[0] + substr + parts.slice(1).join(replacement);
+    return str;
+  };
+
+  const options = {
+    year: "numeric",
+    month: "short", // "MMM"
+    day: "2-digit", // "DD"
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true, // Use 12-hour format with AM/PM
+  };
+
+  const date = new Date(dateString);
+  const almostFormatted = date.toLocaleString("en-US", options);
+  const formattedDate = replaceSecondOccurrence(almostFormatted, ",", " at");
+
+  return formattedDate;
+};
 
 function PlaceholderImage() {
   const width = 1250 + Math.floor(Math.random() * 500 - 500);
@@ -21,26 +46,23 @@ function PlaceholderImage() {
   ) : null;
 }
 
-function Post({ user }) {
-  const lorem =
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse lorem risus, congue sollicitudin mi vel, aliquam viverra eros. In finibus volutpat lobortis. Sed mollis, massa vitae feugiat porta, leo urna lacinia dolor, sit amet gravida eros mi vitae neque. Praesent consectetur, odio id fringilla dictum, turpis ipsum auctor est, ac aliquam elit tortor vel nulla. Nulla facilisi. Sed libero lacus, sagittis eu neque quis, blandit finibus est. Sed posuere, mauris rhoncus rutrum porttitor, nisi nulla vestibulum ante, a auctor purus erat et justo.";
-  const paragraph = lorem.slice(0, Math.floor(Math.random() * lorem.length));
+function Post({ post }) {
+  const authorUserId = post.payload.authorable_id;
+  const author = useUser(authorUserId);
+  const formattedDate = formatDate(post.payload.created_at);
   return (
     <div className={styles.post}>
       <section className={styles.topLeft}>
         <img
           className={styles.avatar}
-          src={user.picture.thumbnail}
+          src={author.profile_picture}
           alt="Avatar"
         />
       </section>
       <section className={styles.topRight}>
         <div className={styles.topRow}>
           <div className={styles.user}>
-            <h3 className={styles.name}>
-              {user.name.first} {user.name.last}
-            </h3>
-            <h4 className={styles.username}>@{user.login.username}</h4>
+            <h3 className={styles.name}>{author.name}</h3>
           </div>
           <FontAwesomeIcon
             className={styles.ellipsis}
@@ -48,30 +70,30 @@ function Post({ user }) {
             size="lg"
           />
         </div>
-        <p className={styles.time}>Few minutes ago</p>
+        <p className={styles.time}>{formattedDate}</p>
       </section>
       <section className={styles.bottomRight}>
         <p className={styles.content}>
-          <h2 className={styles.title}>Post Title</h2>
-          <p className={styles.body}> {paragraph}</p>
+          <h2 className={styles.title}>{post.payload.title}</h2>
+          <p className={styles.body}>{post.payload.plain_text_body}</p>
         </p>
         <PlaceholderImage />
         <div className={styles.stats}>
           <div className={styles.stat}>
             <div className={`${styles.iconContainer} ${styles.red}`}>
-              <FontAwesomeIcon icon={faBolt} size="s" />
+              <FontAwesomeIcon icon={faBolt} />
             </div>
             <p className={styles.statNumber}>1</p>
           </div>
           <div className={styles.stat}>
             <div className={`${styles.iconContainer} ${styles.green}`}>
-              <FontAwesomeIcon icon={faComment} size="s" />
+              <FontAwesomeIcon icon={faComment} />
             </div>
             <p className={styles.statNumber}>2</p>
           </div>
           <div className={styles.stat}>
             <div className={`${styles.iconContainer} ${styles.blue}`}>
-              <FontAwesomeIcon icon={faShare} size="s" />
+              <FontAwesomeIcon icon={faShare} />
             </div>
             <p className={styles.statNumber}>3</p>
           </div>

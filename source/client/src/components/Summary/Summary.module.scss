@@ -1,0 +1,19 @@
+@use "../colors" as colors;
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  padding: 1.5em;
+  border-radius: 1em;
+  background: colors.$elevated1;
+}
+
+.h2 {
+  font-size: 1.1em;
+  font-weight: 550;
+}
+
+.body {
+  font-size: 0.95em;
+}

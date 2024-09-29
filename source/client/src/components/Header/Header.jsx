@@ -7,6 +7,7 @@ import {
   faInbox,
   faBell,
   faCaretDown,
+  faSearch,
 } from "@fortawesome/free-solid-svg-icons";
 import styles from "./Header.module.scss";
 import logo from "../../assets/logo.svg";
@@ -16,11 +17,14 @@ function Header() {
     <header className={styles.header}>
       <section className={styles.left}>
         <img className={styles.logo} src={logo} alt="Logo" />
-        <input
-          className={styles.search}
-          type="text"
-          placeholder="Ask questions about energy or search Collide"
-        />
+        <div className={styles.searchContainer}>
+          <FontAwesomeIcon className={styles.searchIcon} icon={faSearch} />
+          <input
+            className={styles.search}
+            type="text"
+            placeholder="Ask questions about energy or search Collide"
+          />
+        </div>
       </section>
       <nav className={styles.nav}>
         <div className={`${styles.navAction} ${styles.selected}`}>
@@ -47,14 +51,13 @@ function Header() {
           <FontAwesomeIcon className={styles.icon} icon={faBell} />
           <span className={styles.label}>Notifications</span>
         </div>
-        <div className={styles.divider}></div>
         <div className={styles.profile}>
           <img
             className={styles.avatar}
-            src="https://xsgames.co/randomusers/avatar.php?g=male"
-            alt=""
+            src="https://xsgames.co/randomusers/avatar.php?g=female"
+            alt="Avatar"
           />
-          <span className={styles.name}>Yeremias NJ</span>
+          <span className={styles.name}>Admin</span>
           <FontAwesomeIcon className={styles.caret} icon={faCaretDown} />
         </div>
       </nav>

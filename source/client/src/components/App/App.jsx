@@ -1,8 +1,8 @@
 import { Header } from "../Header/Header";
-import { Posts } from "../Posts/Posts";
 import { Profile } from "../Profile/Profile";
 import { TrendingTopics } from "../TrendingTopics/TrendingTopics";
 import { RecommendedUsers } from "../RecommendedUsers/RecommendedUsers";
+import { CenterColumn } from "../CenterColumn/CenterColumn";
 import styles from "./App.module.scss";
 // import { UserCard } from '../Admin/UserCard/UserCard';
 // import data from '../../assets/users.json'; // Corrected import path
@@ -11,6 +11,8 @@ import styles from "./App.module.scss";
 // console.log(users);
 
 function App() {
+  const path = window.location.pathname;
+  const userId = path.split("/")[1];
   return (
     <div className={styles.wrapper}>
       <div className={styles.container}>
@@ -23,10 +25,10 @@ function App() {
         <div className={styles.divider}></div>
         <main className={styles.main}>
           <aside className={styles.left}>
-            <Profile />
+            <Profile userId={userId} />
             <RecommendedUsers />
           </aside>
-          <Posts />
+          <CenterColumn userId={userId} />
           <section className={styles.right}>
             <TrendingTopics />
           </section>

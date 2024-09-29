@@ -41,9 +41,12 @@
 
 .main {
   display: grid;
-  grid-template-columns: 27.5fr 55fr 30fr;
+  grid-template-columns: 27.5fr 60fr 25fr;
   gap: 2em;
 }
 
 .right {
+  display: flex;
+  flex-direction: column;
+  gap: 2em;
 }

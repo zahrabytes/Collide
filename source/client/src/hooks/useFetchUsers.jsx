@@ -1,21 +1,30 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
+
+const fetchSingleUser = () => {
+  return fetch("https://randomuser.me/api")
+    .then((response) => response.json())
+    .then((json) => json.results[0]);
+};
+
+const fetchUsersList = async (amount) => {
+  const fetchRequests = Array.from({ length: amount }).map(() =>
+    fetchSingleUser()
+  );
+  const users = await Promise.all(fetchRequests);
+  return users;
+};
 
 function useFetchUsers(amount) {
   const [users, setUsers] = useState([]);
+
+  const fetchUsers = useMemo(() => fetchUsersList, []);
+
   useEffect(() => {
-    const getUsers = async (amount) => {
-      const fetchRequests = Array.from({ length: amount }).map(() =>
-        fetch("https://randomuser.me/api")
-          .then((response) => response.json())
-          .then((json) => json.results[0])
-      );
-      const users = await Promise.all(fetchRequests);
-      return users;
-    };
-    getUsers(amount).then((users) => {
-      setUsers(users);
+    fetchUsers(amount).then((fetchedUsers) => {
+      setUsers(fetchedUsers);
     });
-  }, [amount]);
+  }, [amount, fetchUsers]);
+
   return users;
 }
 

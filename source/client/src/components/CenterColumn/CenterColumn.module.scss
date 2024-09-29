@@ -1,0 +1,49 @@
+@use "../colors" as colors;
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 2em;
+}
+
+.chips {
+  display: flex;
+  gap: 1em;
+
+  div {
+    padding: 0.5em 1.75em;
+    border-radius: 5em;
+    font-size: 0.975em;
+    font-weight: 550;
+    cursor: pointer;
+    transition: 0.3s ease;
+
+    &:hover {
+      filter: brightness(1.5);
+    }
+  }
+
+  .green {
+    background: linear-gradient(
+      45deg,
+      rgba(0, 243, 12, 0.71) 0%,
+      rgba(5, 147, 242, 0.97) 100%
+    );
+  }
+
+  .blue {
+    background: linear-gradient(
+      45deg,
+      rgba(5, 135, 242, 0.97) 0%,
+      rgba(172, 16, 239, 0.811) 100%
+    );
+  }
+
+  .orange {
+    background: linear-gradient(
+      45deg,
+      rgba(239, 172, 16, 0.811) 0%,
+      rgba(206, 11, 11, 0.886) 100%
+    );
+  }
+}
