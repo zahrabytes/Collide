@@ -74,7 +74,7 @@ def retrieve_dislike_ids(user_id: int):
 def home():
     return jsonify({'message': 'Flask server is running'}), 200
 
-@app.route('/users/posts/<int:user_id>', methods=['GET'])
+@app.route('/users/<int:user_id>/recommendedPosts', methods=['GET'])
 def get_recommended_posts(user_id):
 
     likes = retrieve_like_ids(user_id)
