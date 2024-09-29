@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 const baseEndpoint = "http://127.0.0.1:5000";
 
 function useAnalytics(userId, topics) {
-  topics = "HydrogenInvestmentInfrastructureAcquisition";
   const endpointTopicsMatch = `${baseEndpoint}/user/${userId}/analytics/topicsmatch/${topics}`;
   const endpointInterests = `${baseEndpoint}/user/${userId}/analytics/interests`;
 
@@ -18,8 +17,13 @@ function useAnalytics(userId, topics) {
       .then(([newTopicsMatch, newInterests]) => {
         setTopicsMatch(newTopicsMatch);
         setInterests(newInterests);
+      })
+      .catch((err) => {
+        setTopicsMatch({});
+        setInterests({});
+        console.error(err);
       });
-  }, []);
+  }, [endpointTopicsMatch, endpointInterests]);
 
   return { topicsMatch, interests };
 }

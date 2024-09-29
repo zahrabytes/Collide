@@ -12,7 +12,7 @@ import {
   LineElement,
 } from "chart.js";
 
-const BarChart = () => {
+const BarChart = ({ topicsMatch }) => {
   ChartJS.register(
     CategoryScale,
     LinearScale,
@@ -25,28 +25,24 @@ const BarChart = () => {
     Legend
   );
 
+  const likeScore = Object.values(topicsMatch).map((score) =>
+    score > 0 ? score : 0
+  );
+  const dislikeScore = Object.values(topicsMatch).map((score) =>
+    score < 0 ? score : 0
+  );
+
   const data = {
-    labels: [
-      "Topic 1",
-      "Topic 2",
-      "Topic 3",
-      "Topic 4",
-      "Topic 4",
-      "Topic 6",
-      "Topic 7",
-      "Topic 8",
-      "Topic 9",
-      "Topic 0",
-    ],
+    labels: Object.keys(topicsMatch),
     datasets: [
       {
         label: "Like Score",
-        data: [0, 0.75, 0, 0, 0.5, 0, 0.2, 0, 1, 0],
+        data: likeScore,
         backgroundColor: "rgba(54, 162, 235, 0.75)",
       },
       {
         label: "Dislike Score",
-        data: [-1, 0, -0.5, -0.25, 0, -0.66, 0, -0.33, 0, -0.5],
+        data: dislikeScore,
         backgroundColor: "rgba(255, 99, 132, 0.75)",
       },
     ],

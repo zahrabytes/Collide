@@ -349,6 +349,7 @@ def get_user_topics_match(user_id, topics):
                         {{
                             "topic1": 0.5,
                             "topic2": -0.3,
+                            "topic3": 0.9,
                             ...
                         }}
 
@@ -399,6 +400,15 @@ def get_user_interests(user_id):
                         - Output MUST be a JSON array with interests as strings WITHOUT a summary
                         - DO NOT provide any backticks or unnecessary whitespace, just provide RAW
                           JSON that can be dropped directly into code without any preprocessing
+
+                        Reponse must be in this format:
+
+                        {{
+                            "interest1": 20,
+                            "interest2": 30,
+                            "interest3": 10,
+                            ...
+                        }}
 
                         The data provided is as follows: {collected_user_data}
                     """,
