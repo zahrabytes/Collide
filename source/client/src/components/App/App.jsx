@@ -26,7 +26,7 @@ function App() {
         <main className={styles.main}>
           <aside className={styles.left}>
             <Profile userId={userId} />
-            <RecommendedUsers />
+            <RecommendedUsers userId={userId} />
           </aside>
           <CenterColumn userId={userId} />
           <section className={styles.right}>

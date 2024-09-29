@@ -4,7 +4,9 @@ import { LineChart } from "../LineChart/LineChart";
 
 import styles from "./Analytics.module.scss";
 
-function Analytics() {
+function Analytics({ analytics }) {
+  console.log(analytics);
+
   return (
     <>
       <div className={styles.barContainer}>

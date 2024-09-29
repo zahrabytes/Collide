@@ -20,9 +20,9 @@ client = QdrantClient(
     api_key= Q_KEY,
 )
 
-user_id = 3495
+user_id = 1
 
-def get_user_collected_data(user_id: int) -> dict:
+def get_user_summary(user_id: int) -> dict:
 
     collected_data_result = client.retrieve(
         collection_name="collected_user_data",
@@ -32,7 +32,13 @@ def get_user_collected_data(user_id: int) -> dict:
     )
 
     # Pass user data to OpenAI 
-    openai_prompt = f"This is collected data from a user. Make me a summary about them. Include Post Sentiment Analysis, 20 Keywords with a 0-10 scale on how likely they are to interact with each topic, Topic Trends {collected_data_result[0].payload}"
+    openai_prompt = f"""This is collected data from a user. 
+                        Make me a summary about this user in json format. 
+                        Answer these questions as keys, in the form of paragraphs: 
+                        What can you tell about the types of posts, comments, likes, and dislikes they make? keyname: summary
+                        What is their overall attitude? keyname: overall_attitude
+                        What are they likely to engage with? keyname: likely_engagement
+                        {collected_data_result[0].payload}"""
 
     # Rest of OpenAI code...
     response = openai.chat.completions.create(
@@ -43,5 +49,6 @@ def get_user_collected_data(user_id: int) -> dict:
         }],
     )
 
-    print(response.choices[0].message.content)
-get_user_collected_data(user_id)
+    return(response.choices[0].message.content)
+    
+get_user_summary(user_id)

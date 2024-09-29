@@ -147,7 +147,9 @@ def get_recommended_posts(user_id):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+
 from qdrant_client.http import models
+
 
 @app.route("/users/<int:user_id>/postsovertime", methods=["GET"])
 def get_posts_over_time(user_id):
@@ -159,19 +161,19 @@ def get_posts_over_time(user_id):
                 must=[
                     models.FieldCondition(
                         key="authorable_id",  # Field to filter on
-                        match=models.MatchValue(value=user_id)  # Value to match
+                        match=models.MatchValue(value=user_id),  # Value to match
                     )
                 ]
             ),
             limit=2000,  # Define the number of results per scroll
             with_payload=True,
-            with_vectors=False
+            with_vectors=False,
         )
 
         posts_over_time = [
             {
                 "id": pt.id,
-                "created_at": pt.payload.get("created_at") if pt.payload else None
+                "created_at": pt.payload.get("created_at") if pt.payload else None,
             }
             for pt in result
         ]
@@ -181,7 +183,7 @@ def get_posts_over_time(user_id):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-        
+
 @app.route("/users/<int:user_id>/recommendedusers", methods=["GET"])
 def get_recommended_users(user_id):
 
@@ -191,29 +193,39 @@ def get_recommended_users(user_id):
             collection_name="collected_user_data",
             ids=[user_id],
             with_payload=True,
-            with_vectors=True
+            with_vectors=True,
         )
-        
+
         if result:
             point = result[0]
-            
+
             # Safely get vectors, using the default if a vector is missing or empty
-            posts_vector = np.array(point.vector.get('posts_vector', default_vector) or default_vector)
-            comments_vector = np.array(point.vector.get('comments_vector', default_vector) or default_vector)
-            likes_vector = np.array(point.vector.get('likes_vector', default_vector) or default_vector)
-            dislikes_vector = np.array(point.vector.get('dislikes_vector', default_vector) or default_vector)
-            
+            posts_vector = np.array(
+                point.vector.get("posts_vector", default_vector) or default_vector
+            )
+            comments_vector = np.array(
+                point.vector.get("comments_vector", default_vector) or default_vector
+            )
+            likes_vector = np.array(
+                point.vector.get("likes_vector", default_vector) or default_vector
+            )
+            dislikes_vector = np.array(
+                point.vector.get("dislikes_vector", default_vector) or default_vector
+            )
+
             # Create a combined vector (you can adjust the weights as needed)
             combined_vector = (
-                0.4 * posts_vector +
-                0.3 * comments_vector +
-                0.2 * likes_vector -
-                0.1 * dislikes_vector
+                0.4 * posts_vector
+                + 0.3 * comments_vector
+                + 0.2 * likes_vector
+                - 0.1 * dislikes_vector
             )
 
             # Create NamedVector for the query, specifying which vector to compare against
-            query_vector = NamedVector(name="posts_vector", vector=combined_vector.tolist())
-            
+            query_vector = NamedVector(
+                name="posts_vector", vector=combined_vector.tolist()
+            )
+
             # Do semantic search against the collected_user_data collection
             search_result = client.search(
                 collection_name="collected_user_data",
@@ -221,31 +233,33 @@ def get_recommended_users(user_id):
                 query_filter={
                     "must_not": [
                         {
-                            "key": "id",  
-                            "match": {"value": user_id},  # Exclude the user's own profile
+                            "key": "id",
+                            "match": {
+                                "value": user_id
+                            },  # Exclude the user's own profile
                         },
                     ],
                 },
-                limit=20  # Adjust the limit as needed
+                limit=20,  # Adjust the limit as needed
             )
-            
+
             results = [
                 {
-                    'id': scored_point.id,
-                    'score': scored_point.score,
+                    "id": scored_point.id,
+                    "score": scored_point.score,
                     #'payload': scored_point.payload
-                } 
-                for scored_point in search_result 
+                }
+                for scored_point in search_result
                 if str(scored_point.id) != str(user_id)
-            ][:20] 
+            ][:20]
 
             return (results, 200)
-            
+
             # print(f"Id of the user {user_id}")
             # print(f"Results of the search {results}")
         else:
             print(f"No data found for user {user_id}")
-            
+
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -301,8 +315,12 @@ def get_trending_topics():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@app.route("/user/<int:user_id>/interests/<string:topics>", methods=["GET"])
-def get_user_interests(user_id, topics):
+
+@app.route(
+    "/user/<int:user_id>/analytics/topicsmatch/<string:topics>",
+    methods=["GET"],
+)
+def get_user_topics_match(user_id, topics):
     try:
         collected_user_data = client.retrieve(
             collection_name="collected_user_data",
@@ -318,9 +336,59 @@ def get_user_interests(user_id, topics):
                 {
                     "role": "user",
                     "content": f"""
-                        Some collected data from a user will be provided. 
-                        Your first task is to return a list of 5 of their 
-                        interests based on the data, following these rules:
+                        Some collected data from a user will be provided. Collect user opinion on a
+                        list of trending topics (that will be provided), following these rules:
+
+                        - Weigh each topic on a scale of -1 to 1, where -1 is highly likely to
+                          interact negatively, and 1 is highly likely to interact positively.
+                        - DO NOT provide any backticks or unnecessary whitespace, just provide RAW
+                          JSON that can be dropped directly into code without any preprocessing
+                        - ONLY INCLUDE the topics provided, DO NOT include any extra topics
+
+                        Reponse must be in this format:
+                        {{
+                            "topic1": 0.5,
+                            "topic2": -0.3,
+                            ...
+                        }}
+
+                        The data provided is as follows:
+
+                        Collected user data: {collected_user_data}
+
+                        Topics list: {topics}
+                    """,
+                }
+            ],
+        )
+
+        interests = response.choices[0].message.content
+
+        # No need to jsonify the response since it's already properly formatted
+        return (interests, 200)
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/user/<int:user_id>/analytics/interests", methods=["GET"])
+def get_user_interests(user_id):
+    try:
+        collected_user_data = client.retrieve(
+            collection_name="collected_user_data",
+            ids=[user_id],
+            with_payload=True,
+            with_vectors=False,
+        )
+
+        response = openai.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {
+                    "role": "user",
+                    "content": f"""
+                        Some collected data from a user will be provided. Your task is to return a list
+                        of 5 of their  interests based on the data, following these rules:
                         
                         - They MUST be QUALITY interests, NOT just frequently mentioned words.
                         - Each interest must have a weight associated with its importance to 
@@ -332,17 +400,7 @@ def get_user_interests(user_id, topics):
                         - DO NOT provide any backticks or unnecessary whitespace, just provide RAW
                           JSON that can be dropped directly into code without any preprocessing
 
-                        Your second task will be to collect user opinion on a 
-                        list of trending topics, following these rules:
-
-                        - Weight each topic on a scale of -1 to 1, where -1 is highly likely to 
-                          interact negatively, and 1 is highly likely to interact positively. 
-                        - DO NOT provide any backticks or unnecessary whitespace, just provide RAW
-                          JSON that can be dropped directly into code without any preprocessing
-
-                        The data provided is as follows:
-                        
-                        {collected_user_data} {topics}
+                        The data provided is as follows: {collected_user_data}
                     """,
                 }
             ],
@@ -399,7 +457,7 @@ def get_users():
         return jsonify({"error": str(e)}), 500
 
 # API endpoint to get user data by user ID from the Qdrant collection
-@app.route('/user/<int:user_id>/summary', methods=['GET'])
+@app.route("/user/<int:user_id>/summary", methods=["GET"])
 def get_user_summary(user_id):
     try:
         # Retrieve user data from Qdrant using the user ID
@@ -409,16 +467,21 @@ def get_user_summary(user_id):
             with_payload=True,
             with_vectors=False,
         )
-
-        # If no result is found, return 404
-        if not collected_data_result or len(collected_data_result) == 0:
-            return jsonify({"error": "User not found"}), 404
-
-        # Extract user data from the collected_data_result
-        user_data = collected_data_result[0].payload
-
         # Pass user data to OpenAI
-        openai_prompt = f"This is collected data from a user. Make me a summary about them {user_data}"
+        openai_prompt = f"""
+        Data collected from a user will be provided. Make a summary about the user in JSON format. 
+
+        Answer these questions as keys, in the form of paragraphs: 
+        - What can you tell about the types of posts, comments, likes, and dislikes they make? keyname: summary
+        - What is their overall attitude? keyname: overall_attitude
+        - What are they likely to engage with? keyname: likely_engagement
+
+        Rules:
+        - DO NOT provide any backticks or unnecessary whitespace, just provide RAW
+          JSON that can be dropped directly into code without any preprocessing
+
+        The data provided is as follows: {collected_data_result[0].payload}
+        """
 
         # Rest of OpenAI code...
         response = openai.chat.completions.create(
@@ -431,12 +494,14 @@ def get_user_summary(user_id):
             ],
         )
 
-        # Return the user data as a JSON response
-        return jsonify(response.choices[0].message.content), 200
+        summary = response.choices[0].message.content
+
+        # No need to jsonify the response since it's already properly formatted
+        return (summary), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-        
+
 
 @app.route("/user/<int:user_id>", methods=["GET"])
 def get_user(user_id):
@@ -449,7 +514,7 @@ def get_user(user_id):
             with_vectors=False,
         )
 
-        print(user_data)
+        # print(user_data)
 
         # If no result is found, return 404
         if not user_data or len(user_data) == 0:

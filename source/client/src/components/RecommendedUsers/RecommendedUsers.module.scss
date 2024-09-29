@@ -59,21 +59,30 @@
   }
 
   .follow {
-    background: aliceblue;
+    background: colors.$foreground;
     border: none;
     border-radius: 100em;
     font-size: 0.925em;
     padding: 0.325em 1.35em;
     cursor: pointer;
+    transition: 0.3s ease;
+
+    &:hover {
+      filter: brightness(1.25);
+    }
   }
 }
 
-.link {
+.showMore {
+  background: colors.$foreground;
   margin: 0 0.75em;
-  color: colors.$linkColor;
   font-size: 0.925em;
-  font-weight: 550;
+  border-radius: 0.5em;
+  border: none;
+  padding: 0.25em 0;
+  font-weight: 500;
   text-decoration: none;
+  cursor: pointer;
   transition: 0.3s ease;
 
   &:hover {

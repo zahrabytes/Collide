@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 
 const baseEndpoint = "http://127.0.0.1:5000";
 
-function useTrendingTopics(userId) {
-  const endpoint = `${baseEndpoint}/trendingTopics`;
+function useTrendingTopics() {
+  const endpoint = `${baseEndpoint}/trendingtopics`;
   const [topics, setTopics] = useState([]);
   useEffect(() => {
     fetch(endpoint)
