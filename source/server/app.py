@@ -146,8 +146,8 @@ def get_recommended_posts(user_id):
         return jsonify({"error": str(e)}), 500
 
 
-@app.route("/trendingtopics", methods=["GET"])
-def get_trendingtopics():
+@app.route("/trendingTopics", methods=["GET"])
+def get_trending_topics():
     try:
         collected_post_result = client.scroll(
             collection_name="posts", with_payload=True, with_vectors=False
@@ -169,11 +169,34 @@ def get_trendingtopics():
             messages=[
                 {
                     "role": "user",
-                    "content": f"This is collected data from a userbase. Give me a list of 20 trending topics (they must be quality topics, not just frequently mentioned words, two words each, in list separated by commas, without summarry): {collected_post_result} {collected_comment_result}",
+                    "content": f"""
+                        Some collected data from a userbase will be provided. Return a list of 20
+                        trending topics based on the data, following these rules:
+                        
+                        - They MUST be QUALITY topics, NOT just frequently mentioned words.
+                        - Each topic MUST be EXACTLY one word, preferably less than 8 characters.
+                        - Capitalize the first letter of each topic.
+                        - Topics MUST be RELEVANT to the userbase, NOT general or random.
+                        - Output MUST be a JSON array with topics as strings WITHOUT a summary
+                        - DO NOT provide any backticks or unnecessary whitespace, just provide RAW
+                          JSON that can be dropped directly into code without any preprocessing
+                        - Bonus points if you can mix in some of the following topics:
+                            "AI", "Data", "Software", "Oil", "Rig", "Upstream", "Drilling", "Fracking",
+                            "Engineering", "Revenue", "Reservoir", "Seismic", "Renewable", "Energy", "Gas",
+                            "Solar", "Wind", "Hydro", "Nuclear", "Coal"
+
+                        The data provided is as follows:
+                        
+                        {collected_post_result} {collected_comment_result}
+                    """,
                 }
             ],
         )
-        return jsonify(response.choices[0].message.content), 200
+
+        topics = response.choices[0].message.content
+
+        # No need to jsonify the response since it's already properly formatted
+        return (topics, 200)
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
