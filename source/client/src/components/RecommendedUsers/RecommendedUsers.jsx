@@ -1,20 +1,17 @@
-import { useFetchUsers } from "../../hooks/useFetchUsers";
+import { useRecommendedUsers } from "../../hooks/useRecommendedUsers";
+import { useUser } from "../../hooks/useUser";
+import { useState } from "react";
 import styles from "./RecommendedUsers.module.scss";
 
-function UserCard({ user }) {
+function UserCard({ userId }) {
+  const user = useUser(userId);
   return (
     <div className={styles.userCard}>
-      <img
-        className={styles.avatar}
-        src={user.picture.thumbnail}
-        alt="Avatar"
-      />
+      <img className={styles.avatar} src={user.profile_picture} alt="Avatar" />
       <div className={styles.right}>
         <div>
-          <p className={styles.name}>
-            {user.name.first} {user.name.last}
-          </p>
-          <p className={styles.username}>@{user.login.username}</p>
+          <p className={styles.name}>{user.name}</p>
+          <p className={styles.username}>@{user.username}</p>
         </div>
         <button className={styles.follow}>Follow</button>
       </div>
@@ -22,19 +19,27 @@ function UserCard({ user }) {
   );
 }
 
-function RecommendedUsers() {
-  const users = useFetchUsers(8);
+function RecommendedUsers({ userId }) {
+  const users = useRecommendedUsers(userId);
+  const firstEightUsers = users.slice(0, 8);
+
+  const [showMore, setShowMore] = useState(false);
+  const shownUsers = showMore ? users : firstEightUsers;
+
   return (
     <div className={styles.container}>
       <h2 className={styles.h2}>Recommended Users</h2>
       <div className={styles.users}>
-        {users.map((user, index) => (
-          <UserCard user={user} key={index} />
+        {shownUsers.map((user, index) => (
+          <UserCard userId={user.id} key={index} />
         ))}
       </div>
-      <a className={styles.link} href="#">
-        Show More
-      </a>
+      <button
+        className={styles.showMore}
+        onClick={() => setShowMore(!showMore)}
+      >
+        {showMore ? "Show Less" : `Show More`}
+      </button>
     </div>
   );
 }
