@@ -16,18 +16,34 @@ function isNumberOrEmpty(variable) {
 }
 
 function App() {
-  const { users, loading, error } = useFetchAllUsers(); // Fetch users, loading, and error
-
   const path = window.location.pathname;
   const userId = path.split("/")[1];
 
   const trendingTopics = useTrendingTopics();
 
+  const { users, loading, error } = useFetchAllUsers(); // Fetch users, loading, and error
 
   return (
     <div className={styles.wrapper}>
       <div className={styles.container}>
         <Header />
+        <div className={styles.gridContainer}>
+          {isNumberOrEmpty(userId) && loading && (
+            <div className={styles.loading}>
+              Loading users...
+            </div>
+          )}
+          {isNumberOrEmpty(userId) && !loading && Array.isArray(users) && users.map(user => (
+            <UserCard key={user.id} user={user} />
+          ))}
+          {error && (
+            <div className={styles.error}>
+              Error: {error}
+            </div>
+          )}
+        </div>
+        {!isNumberOrEmpty(userId) && (
+          <>
         <div className={styles.divider}></div>
         <main className={styles.main}>
           <aside className={styles.left}>
@@ -39,40 +55,9 @@ function App() {
             <TrendingTopics trendingTopics={trendingTopics} />
           </section>
         </main>
-      </div>
-        <div className={styles.gridContainer}>
-          {isNumberOrEmpty(userId) && loading && (
-            <div className={styles.loading}>
-              Loading users...
-            </div>
-          )}
-
-          {isNumberOrEmpty(userId) && !loading && Array.isArray(users) && users.map(user => (
-            <UserCard key={user.id} user={user} />
-          ))}
-
-          {error && (
-            <div className={styles.error}>
-              Error: {error}
-            </div>
-          )}
-        </div>
-        {!isNumberOrEmpty(userId) && (
-          <>
-          <div className={styles.divider}></div>
-          <main className={styles.main}>
-            <aside className={styles.left}>
-              <Profile userId={userId} />
-              <RecommendedUsers userId={userId} />
-            </aside>
-            <CenterColumn userId={userId} />
-            <section className={styles.right}>
-              <TrendingTopics />
-            </section>
-          </main>
-          </>
+        </>
         )}
-        </div>
+      </div>
     </div>
   );
 }
