@@ -2,12 +2,14 @@ import os
 import openai
 import numpy as np
 from flask import Flask, jsonify
+from flask_cors import CORS
 from dotenv import load_dotenv
 from qdrant_client import QdrantClient
 from sentence_transformers import SentenceTransformer
 
 # Initialize Flask app
 app = Flask(__name__)
+CORS(app)
 
 # Load environment variables from .env file
 load_dotenv("..//.env.local")
@@ -63,7 +65,7 @@ def home():
     return jsonify({"message": "Flask server is running"}), 200
 
 
-@app.route("/user/<int:user_id>/recommendedPosts", methods=["GET"])
+@app.route("/users/<int:user_id>/recommendedPosts", methods=["GET"])
 def get_recommended_posts(user_id):
 
     likes = retrieve_like_ids(user_id)
@@ -200,22 +202,36 @@ def get_users():
         )
 
         # If no result is found, return 404
-        if not users_result or len(users_result) == 0:
+        if not users_result or len(users_result[0]) == 0:
             return jsonify({"error": "Users not found"}), 404
 
         # Extract user data from the collected_data_result
-        users_data = [user.payload for user in users_result[0]]
+        users_data = []
+        for user in users_result[0]:
+            # Check if the payload matches the structure we want to exclude
+            excluded_payload = {
+                "posts": "",
+                "comments": "",
+                "likes": "",
+                "dislikes": "",
+            }
+            if user.payload != excluded_payload:
+                users_data.append(user.payload)
 
-        # Return the user data as a JSON response
+        # If all users were filtered out, return 404
+        if len(users_data) == 0:
+            return jsonify({"error": "No qualifying users found"}), 404
+
+        # Return the filtered user data as a JSON response
         return jsonify(users_data), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 
-# API endpt user data oint to geby user ID from the Qdrant collection
-@app.route("/user/<int:user_id>", methods=["GET"])
-def get_user(user_id):
+# API endpoint to get user data by user ID from the Qdrant collection
+@app.route("/user/<int:user_id>/summary", methods=["GET"])
+def get_user_summary(user_id):
     try:
         # Retrieve user data from Qdrant using the user ID
         collected_data_result = client.retrieve(
@@ -248,6 +264,30 @@ def get_user(user_id):
 
         # Return the user data as a JSON response
         return jsonify(response.choices[0].message.content), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/user/<int:user_id>", methods=["GET"])
+def get_user(user_id):
+    try:
+        # Retrieve user data from Qdrant using the user ID
+        user_data = client.retrieve(
+            collection_name="users",
+            ids=[user_id],
+            with_payload=True,
+            with_vectors=False,
+        )
+
+        print(user_data)
+
+        # If no result is found, return 404
+        if not user_data or len(user_data) == 0:
+            return jsonify({"error": "User not found"}), 404
+
+        # Return the user data as a JSON response
+        return jsonify(user_data[0].payload), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
