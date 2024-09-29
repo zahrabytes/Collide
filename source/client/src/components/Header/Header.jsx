@@ -16,7 +16,9 @@ function Header() {
   return (
     <header className={styles.header}>
       <section className={styles.left}>
-        <img className={styles.logo} src={logo} alt="Logo" />
+        <a href="/">
+          <img className={styles.logo} src={logo} alt="Logo" />
+        </a>
         <div className={styles.searchContainer}>
           <FontAwesomeIcon className={styles.searchIcon} icon={faSearch} />
           <input

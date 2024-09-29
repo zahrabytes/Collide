@@ -4,8 +4,8 @@ import { TrendingTopics } from "../TrendingTopics/TrendingTopics";
 import { RecommendedUsers } from "../RecommendedUsers/RecommendedUsers";
 import { CenterColumn } from "../CenterColumn/CenterColumn";
 import styles from "./App.module.scss";
-import { UserCard } from '../Admin/UserCard/UserCard';
-import { useFetchAllUsers } from '../../hooks/useFetchAllUsers'; // Import the custom hook
+import { UserCard } from "../Admin/UserCard/UserCard";
+import { useFetchAllUsers } from "../../hooks/useFetchAllUsers"; // Import the custom hook
 
 function Admin() {
   const { users, loading, error } = useFetchAllUsers(); // Fetch users, loading, and error
@@ -18,21 +18,13 @@ function Admin() {
       <div className={styles.container}>
         <Header />
         <div className={styles.gridContainer}>
-          {loading && (
-            <div className={styles.loading}>
-              Loading users...
-            </div>
-          )}
+          {loading && <div className={styles.loading}>Loading users...</div>}
 
-          {!loading && Array.isArray(users) && users.map(user => (
-            <UserCard key={user.id} user={user} />
-          ))}
+          {!loading &&
+            Array.isArray(users) &&
+            users.map((user) => <UserCard key={user.id} user={user} />)}
 
-          {error && (
-            <div className={styles.error}>
-              Error: {error}
-            </div>
-          )}
+          {error && <div className={styles.error}>Error: {error}</div>}
         </div>
         <div className={styles.divider}></div>
         <main className={styles.main}>

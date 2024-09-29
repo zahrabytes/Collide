@@ -20,13 +20,13 @@ function Profile({ userId }) {
       </div>
       <div className={styles.stats}>
         <div className={styles.stat}>
-          <h4 className={styles.number}>572</h4>
+          <h4 className={styles.number}>{user.following_count}</h4>
           <p className={styles.label}>Following</p>
         </div>
         <div className={styles.divider}></div>
         <div className={styles.stat}>
-          <h4 className={styles.number}>837</h4>
-          <p className={styles.label}> Followers</p>
+          <h4 className={styles.number}>{user.follower_count}</h4>
+          <p className={styles.label}>Followers</p>
         </div>
       </div>
       <p className={styles.bottom}>

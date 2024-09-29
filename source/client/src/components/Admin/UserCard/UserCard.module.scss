@@ -9,6 +9,7 @@
   margin-left: auto;
   margin-right: auto;
   color: #000;
+  cursor: pointer;
   transition: transform 0.3s ease, box-shadow 0.3s ease; /* Add transition for smooth hover effect */
 
   &:hover {
