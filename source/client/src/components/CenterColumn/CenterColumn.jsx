@@ -5,6 +5,8 @@ import { Summary } from "../Summary/Summary";
 import { useSummary } from "../../hooks/useSummary";
 import { useRecommendedPosts } from "../../hooks/useRecommendedPosts";
 import { useUser } from "../../hooks/useUser";
+import { useAnalytics } from "../../hooks/useAnalytics";
+import { useTrendingTopics } from "../../hooks/useTrendingTopics";
 import styles from "./CenterColumn.module.scss";
 
 function CenterColumn({ userId }) {
@@ -15,6 +17,9 @@ function CenterColumn({ userId }) {
 
   const posts = useRecommendedPosts(userId);
   const user = useUser(userId);
+
+  const trendingTopics = useTrendingTopics();
+  const analytics = useAnalytics(userId, trendingTopics);
 
   const summary = useSummary(userId);
 
@@ -32,7 +37,7 @@ function CenterColumn({ userId }) {
         </div>
       </div>
       {selectedPage === "suggested" && <Posts {...{ posts, user }} />}
-      {selectedPage === "analytics" && <Analytics userId={userId} />}
+      {selectedPage === "analytics" && <Analytics analytics={analytics} />}
       {selectedPage === "summary" && <Summary summary={summary} />}
     </div>
   );

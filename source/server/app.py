@@ -316,8 +316,11 @@ def get_trending_topics():
         return jsonify({"error": str(e)}), 500
 
 
-@app.route("/user/<int:user_id>/interests/<string:topics>", methods=["GET"])
-def get_user_interests(user_id, topics):
+@app.route(
+    "/user/<int:user_id>/analytics/topicsmatch/<string:topics>",
+    methods=["GET"],
+)
+def get_user_topics_match(user_id, topics):
     try:
         collected_user_data = client.retrieve(
             collection_name="collected_user_data",
@@ -333,9 +336,59 @@ def get_user_interests(user_id, topics):
                 {
                     "role": "user",
                     "content": f"""
-                        Some collected data from a user will be provided. 
-                        Your first task is to return a list of 5 of their 
-                        interests based on the data, following these rules:
+                        Some collected data from a user will be provided. Collect user opinion on a
+                        list of trending topics (that will be provided), following these rules:
+
+                        - Weigh each topic on a scale of -1 to 1, where -1 is highly likely to
+                          interact negatively, and 1 is highly likely to interact positively.
+                        - DO NOT provide any backticks or unnecessary whitespace, just provide RAW
+                          JSON that can be dropped directly into code without any preprocessing
+                        - ONLY INCLUDE the topics provided, DO NOT include any extra topics
+
+                        Reponse must be in this format:
+                        {{
+                            "topic1": 0.5,
+                            "topic2": -0.3,
+                            ...
+                        }}
+
+                        The data provided is as follows:
+
+                        Collected user data: {collected_user_data}
+
+                        Topics list: {topics}
+                    """,
+                }
+            ],
+        )
+
+        interests = response.choices[0].message.content
+
+        # No need to jsonify the response since it's already properly formatted
+        return (interests, 200)
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/user/<int:user_id>/analytics/interests", methods=["GET"])
+def get_user_interests(user_id):
+    try:
+        collected_user_data = client.retrieve(
+            collection_name="collected_user_data",
+            ids=[user_id],
+            with_payload=True,
+            with_vectors=False,
+        )
+
+        response = openai.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {
+                    "role": "user",
+                    "content": f"""
+                        Some collected data from a user will be provided. Your task is to return a list
+                        of 5 of their  interests based on the data, following these rules:
                         
                         - They MUST be QUALITY interests, NOT just frequently mentioned words.
                         - Each interest must have a weight associated with its importance to 
@@ -347,17 +400,7 @@ def get_user_interests(user_id, topics):
                         - DO NOT provide any backticks or unnecessary whitespace, just provide RAW
                           JSON that can be dropped directly into code without any preprocessing
 
-                        Your second task will be to collect user opinion on a 
-                        list of trending topics, following these rules:
-
-                        - Weight each topic on a scale of -1 to 1, where -1 is highly likely to 
-                          interact negatively, and 1 is highly likely to interact positively. 
-                        - DO NOT provide any backticks or unnecessary whitespace, just provide RAW
-                          JSON that can be dropped directly into code without any preprocessing
-
-                        The data provided is as follows:
-                        
-                        {collected_user_data} {topics}
+                        The data provided is as follows: {collected_user_data}
                     """,
                 }
             ],
@@ -394,7 +437,7 @@ def get_users():
             with_vectors=False,
         )
 
-        print(type(users_result[0]))
+        # print(type(users_result[0]))
 
         # If no result is found, return 404
         if not users_result or len(users_result[0]) == 0:
@@ -470,7 +513,7 @@ def get_user(user_id):
             with_vectors=False,
         )
 
-        print(user_data)
+        # print(user_data)
 
         # If no result is found, return 404
         if not user_data or len(user_data) == 0:
