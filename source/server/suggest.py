@@ -16,7 +16,7 @@ client = QdrantClient(
     api_key= Q_KEY,
 )
 
-user_id = 1 
+user_id = 1
 vector_dimension = 384  # Adjust this if your vectors have a different dimension
 default_vector = [0.0] * vector_dimension
 
@@ -83,10 +83,10 @@ try:
         
         # Combine embeddings
         combined_embedding = (
-            0.4 * posts_vector +
+            0.1 * posts_vector +
             0.3 * comments_vector +
             0.2 * likes_vector -
-            0.1 * dislikes_vector
+            0.4 * dislikes_vector
         )
         
         # Do semantic search against the posts collection

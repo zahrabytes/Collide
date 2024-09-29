@@ -151,6 +151,40 @@ def get_recommended_posts(user_id):
         return jsonify({"error": str(e)}), 500
 
 
+@app.route('/trendingtopics', methods=['GET'])
+def get_trendingtopics():
+    try:
+        collected_post_result = client.scroll(
+            collection_name="posts",
+            with_payload=True,
+            with_vectors=False
+        )
+
+        if not collected_post_result or len(collected_post_result) == 0:
+            return jsonify({"error": "posts not found"}), 404
+        
+        collected_comment_result = client.scroll(
+            collection_name="comments",
+            with_payload=True,
+            with_vectors=False
+        )
+
+        if not collected_post_result or len(collected_comment_result) == 0:
+            return jsonify({"error": "comments not found"}), 404
+
+        # Rest of OpenAI code...
+        response = openai.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[{
+                "role": "user",
+                "content": f"This is collected data from a userbase. Give me a list of 20 trending topics (they must be quality topics, not just frequently mentioned words, two words each, in list separated by commas, without summarry): {collected_post_result} {collected_comment_result}",
+            }],
+        )
+        return jsonify(response.choices[0].message.content), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 @app.route('/users/count', methods=['GET'])
 def get_user_count():
     try:
