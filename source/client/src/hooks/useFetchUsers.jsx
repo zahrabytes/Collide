@@ -1,31 +1,41 @@
 import { useEffect, useState, useMemo } from "react";
 
-const fetchSingleUser = () => {
-  return fetch("https://randomuser.me/api")
-    .then((response) => response.json())
-    .then((json) => json.results[0]);
+// Fetch a single user by ID from the provided API
+const fetchSingleUser = (userId) => {
+  return fetch(`http://127.0.0.1:5000/user/${userId}`)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`Failed to fetch user with ID ${userId}`);
+      }
+      return response.json();
+    })
+    .then((json) => json); // Assuming the API returns a single user object
 };
 
-const fetchUsersList = async (amount) => {
-  const fetchRequests = Array.from({ length: amount }).map(() =>
-    fetchSingleUser()
-  );
-  const users = await Promise.all(fetchRequests);
-  return users;
+// Fetch a list of users based on an array of user IDs
+const fetchUsersList = async (userIds) => {
+  const fetchRequests = userIds.map((userId) => fetchSingleUser(userId)); // Fetch each user by ID
+  const users = await Promise.all(fetchRequests); // Wait for all requests to complete
+  return users; // Return the array of users
 };
 
-function useFetchUsers(amount) {
-  const [users, setUsers] = useState([]);
+// Custom hook to fetch a list of users by their IDs
+function useFetchUsers(userIds) {
+  const [users, setUsers] = useState([]); // State to store fetched users
 
-  const fetchUsers = useMemo(() => fetchUsersList, []);
+  const fetchUsers = useMemo(() => fetchUsersList, []); // Memoize the fetch function to avoid re-creating it on every render
 
   useEffect(() => {
-    fetchUsers(amount).then((fetchedUsers) => {
-      setUsers(fetchedUsers);
-    });
-  }, [amount, fetchUsers]);
+    if (userIds && userIds.length > 0) {
+      fetchUsers(userIds).then((fetchedUsers) => {
+        setUsers(fetchedUsers); // Set the fetched users in state
+      }).catch((error) => {
+        console.error("Error fetching users:", error); // Handle any errors during fetching
+      });
+    }
+  }, [userIds, fetchUsers]); // Only re-fetch when user IDs change
 
-  return users;
+  return users; // Return the users array
 }
 
 export { useFetchUsers };
