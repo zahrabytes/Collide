@@ -136,13 +136,13 @@ def get_recommended_posts(user_id):
                 }
             )
             
-            results = [{
+            posts = [{
                 'id': scored_point.id,
                 'score': scored_point.score,
                 'payload': scored_point.payload
             } for scored_point in search_result]
             
-            return jsonify({'results': results})
+            return jsonify({'posts': posts})
 
         else:
             return jsonify({"error": f"Data not found for user {user_id}"}), 404
