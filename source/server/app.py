@@ -177,20 +177,32 @@ def get_recommended_users(user_id):
             )
 
             # Create NamedVector for the query, specifying which vector to compare against
-            query_vector = NamedVector(name="likes_vector", vector=combined_vector.tolist())
+            query_vector = NamedVector(name="posts_vector", vector=combined_vector.tolist())
             
             # Do semantic search against the collected_user_data collection
             search_result = client.search(
                 collection_name="collected_user_data",
                 query_vector=query_vector,
+                query_filter={
+                    "must_not": [
+                        {
+                            "key": "id",  
+                            "match": {"value": user_id},  # Exclude the user's own profile
+                        },
+                    ],
+                },
                 limit=20  # Adjust the limit as needed
             )
             
-            results = [{
-                'id': scored_point.id,
-                'score': scored_point.score,
-                #'payload': scored_point.payload
-            } for scored_point in search_result]
+            results = [
+                {
+                    'id': scored_point.id,
+                    'score': scored_point.score,
+                    #'payload': scored_point.payload
+                } 
+                for scored_point in search_result 
+                if str(scored_point.id) != str(user_id)
+            ][:20] 
 
             return (results, 200)
             
