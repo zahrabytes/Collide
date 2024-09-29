@@ -372,6 +372,7 @@ def get_user_count():
 @app.route("/users", methods=["GET"])
 def get_users():
     try:
+        # Scroll through the collection and get the user data
         users_result = client.scroll(
             collection_name="users",
             limit=RECORDS_LIMIT,
@@ -379,23 +380,23 @@ def get_users():
             with_vectors=False,
         )
 
-        print(type(users_result[0]))
+        print(type(users_result[0]))  # Check what type of object is returned
 
-        # If no result is found, return 404
+        # If no users are found, return 404
         if not users_result or len(users_result[0]) == 0:
             return jsonify({"error": "Users not found"}), 404
 
-        users = {}
+        users = []
 
+        # Extract each user and append to the users list
         for user in users_result[0]:
-            users[user.payload['id']] = user.payload
+            users.append(user.payload)
 
-        # Return the filtered user data as a JSON response
-        return jsonify({'user_results': users}), 200
+        # Return the user data as a JSON response
+        return jsonify({'users': users}), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
 
 # API endpoint to get user data by user ID from the Qdrant collection
 @app.route('/user/<int:user_id>/summary', methods=['GET'])
