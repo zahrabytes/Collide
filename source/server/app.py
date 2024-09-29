@@ -10,11 +10,12 @@ load_dotenv()
 app = Flask(__name__)
 
 # Qdrant API key from environment variables
-QDRANT_API_KEY = os.getenv('QDRANT_API_KEY')
+QDRANT_API_KEY = os.getenv('Q_KEY')
+QDRANT_URL = os.getenv('Q_URL')
 
 # Initialize Qdrant client with API key
 client = QdrantClient(
-    url="https://33058675-b93f-4a25-add3-6391fac8678c.europe-west3-0.gcp.cloud.qdrant.io:6333", 
+    url=QDRANT_URL, 
     api_key=QDRANT_API_KEY
 )
 
