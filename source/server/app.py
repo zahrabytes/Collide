@@ -403,34 +403,29 @@ def get_user_summary(user_id):
     try:
         # Retrieve user data from Qdrant using the user ID
         collected_data_result = client.retrieve(
-            collection_name="collected_user_data",
-            ids=[user_id],
-            with_payload=True,
-            with_vectors=False,
-        )
-
-        # If no result is found, return 404
-        if not collected_data_result or len(collected_data_result) == 0:
-            return jsonify({"error": "User not found"}), 404
-
-        # Extract user data from the collected_data_result
-        user_data = collected_data_result[0].payload
-
-        # Pass user data to OpenAI
-        openai_prompt = f"This is collected data from a user. Make me a summary about them {user_data}"
+        collection_name="collected_user_data",
+        ids=[user_id],
+        with_payload=True,
+        with_vectors=False
+    )
+        # Pass user data to OpenAI 
+        openai_prompt = f"""This is collected data from a user. 
+                            Make me a summary about this user in json format. 
+                            Answer these questions as keys, in the form of paragraphs: 
+                            What can you tell about the types of posts, comments, likes, and dislikes they make? keyname: summary
+                            What is their overall attitude? keyname: overall_attitude
+                            What are they likely to engage with? keyname: likely_engagement
+                            {collected_data_result[0].payload}"""
 
         # Rest of OpenAI code...
         response = openai.chat.completions.create(
             model="gpt-4o-mini",
-            messages=[
-                {
-                    "role": "user",
-                    "content": openai_prompt,
-                }
-            ],
+            messages=[{
+                "role": "user",
+                "content": openai_prompt,
+            }],
         )
 
-        # Return the user data as a JSON response
         return jsonify(response.choices[0].message.content), 200
 
     except Exception as e:
