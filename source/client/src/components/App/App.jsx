@@ -4,36 +4,59 @@ import { TrendingTopics } from "../TrendingTopics/TrendingTopics";
 import { RecommendedUsers } from "../RecommendedUsers/RecommendedUsers";
 import { CenterColumn } from "../CenterColumn/CenterColumn";
 import styles from "./App.module.scss";
-// import { UserCard } from '../Admin/UserCard/UserCard';
-// import data from '../../assets/users.json'; // Corrected import path
+import { UserCard } from '../Admin/UserCard/UserCard';
+import { useFetchAllUsers } from '../../hooks/useFetchAllUsers'; // Import the custom hook
 
-// const users = data.users;
-// console.log(users);
+function isNumberOrEmpty(variable) {
+  return (
+    typeof variable === 'number' || // Check if it's a number
+    variable === ''           // Check if it's an empty string
+  );
+}
 
 function App() {
+  const { users, loading, error } = useFetchAllUsers(); // Fetch users, loading, and error
+
   const path = window.location.pathname;
   const userId = path.split("/")[1];
+
   return (
     <div className={styles.wrapper}>
       <div className={styles.container}>
         <Header />
-        {/* <div className={styles.gridContainer}>
-          {Array.isArray(users) && users.map(user => (
+        <div className={styles.gridContainer}>
+          {isNumberOrEmpty(userId) && loading && (
+            <div className={styles.loading}>
+              Loading users...
+            </div>
+          )}
+
+          {isNumberOrEmpty(userId) && !loading && Array.isArray(users) && users.map(user => (
             <UserCard key={user.id} user={user} />
           ))}
-        </div> */}
-        <div className={styles.divider}></div>
-        <main className={styles.main}>
-          <aside className={styles.left}>
-            <Profile userId={userId} />
-            <RecommendedUsers userId={userId} />
-          </aside>
-          <CenterColumn userId={userId} />
-          <section className={styles.right}>
-            <TrendingTopics />
-          </section>
-        </main>
-      </div>
+
+          {error && (
+            <div className={styles.error}>
+              Error: {error}
+            </div>
+          )}
+        </div>
+        {!isNumberOrEmpty(userId) && (
+          <>
+          <div className={styles.divider}></div>
+          <main className={styles.main}>
+            <aside className={styles.left}>
+              <Profile userId={userId} />
+              <RecommendedUsers userId={userId} />
+            </aside>
+            <CenterColumn userId={userId} />
+            <section className={styles.right}>
+              <TrendingTopics />
+            </section>
+          </main>
+          </>
+        )}
+        </div>
     </div>
   );
 }
