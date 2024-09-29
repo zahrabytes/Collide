@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
-
-const baseEndpoint = "http://127.0.0.1:5000";
+import { SERVER_BASE_ENDPOINT } from "./getServerBaseEndpoint";
 
 function useAnalytics(userId, topics) {
-  const endpointTopicsMatch = `${baseEndpoint}/user/${userId}/analytics/topicsmatch/${topics}`;
-  const endpointInterests = `${baseEndpoint}/user/${userId}/analytics/interests`;
+  const endpointTopicsMatch = `${SERVER_BASE_ENDPOINT}/user/${userId}/analytics/topicsmatch/${topics}`;
+  const endpointInterests = `${SERVER_BASE_ENDPOINT}/user/${userId}/analytics/interests`;
 
   const [topicsMatch, setTopicsMatch] = useState({});
   const [interests, setInterests] = useState({});

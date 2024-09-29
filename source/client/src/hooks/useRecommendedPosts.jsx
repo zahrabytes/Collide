@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
-
-const baseEndpoint = "http://127.0.0.1:5000";
+import { SERVER_BASE_ENDPOINT } from "./getServerBaseEndpoint";
 
 function useRecommendedPosts(userId) {
-  const endpoint = `${baseEndpoint}/users/${userId}/recommendedposts`;
+  const endpoint = `${SERVER_BASE_ENDPOINT}/users/${userId}/recommendedposts`;
   const [posts, setPosts] = useState([]);
   useEffect(() => {
     fetch(endpoint)

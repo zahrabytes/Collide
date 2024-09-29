@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
-
-const baseEndpoint = "http://127.0.0.1:5000";
+import { SERVER_BASE_ENDPOINT } from "./getServerBaseEndpoint";
 
 function useSummary(userId) {
-  const endpoint = `${baseEndpoint}/user/${userId}/summary`;
+  const endpoint = `${SERVER_BASE_ENDPOINT}/user/${userId}/summary`;
   const [summary, setSummary] = useState([]);
   useEffect(() => {
     fetch(endpoint)

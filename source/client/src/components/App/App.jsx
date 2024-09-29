@@ -4,24 +4,20 @@ import { TrendingTopics } from "../TrendingTopics/TrendingTopics";
 import { RecommendedUsers } from "../RecommendedUsers/RecommendedUsers";
 import { CenterColumn } from "../CenterColumn/CenterColumn";
 import { useTrendingTopics } from "../../hooks/useTrendingTopics";
-import styles from "./App.module.scss";
 import { UserCard } from "../Admin/UserCard/UserCard";
 import { useFetchAllUsers } from "../../hooks/useFetchAllUsers"; // Import the custom hook
+import styles from "./App.module.scss";
 
 function isNumberOrEmpty(variable) {
-  return (
-    typeof variable === "number" || // Check if it's a number
-    variable === "" // Check if it's an empty string
-  );
+  return typeof variable === "number" || variable === "";
 }
 
 function App() {
   const path = window.location.pathname;
   const userId = path.split("/")[1];
 
+  const { users, loading, error } = useFetchAllUsers();
   const trendingTopics = useTrendingTopics();
-
-  const { users, loading, error } = useFetchAllUsers(); // Fetch users, loading, and error
 
   return (
     <div className={styles.wrapper}>

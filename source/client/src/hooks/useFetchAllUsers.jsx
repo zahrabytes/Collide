@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
-
-const baseEndpoint = "http://127.0.0.1:5000"; // Base URL of your API
+import { SERVER_BASE_ENDPOINT } from "./getServerBaseEndpoint";
 
 function useFetchAllUsers() {
-  const endpoint = `${baseEndpoint}/users`; // URL to fetch all users
+  const endpoint = `${SERVER_BASE_ENDPOINT}/users`; // URL to fetch all users
   const [users, setUsers] = useState([]); // State to hold users data
   const [loading, setLoading] = useState(true); // Loading state
   const [error, setError] = useState(null); // Error state
@@ -12,10 +11,10 @@ function useFetchAllUsers() {
     const fetchUsers = async () => {
       try {
         const response = await fetch(endpoint, {
-          method: 'GET',
+          method: "GET",
           headers: {
-            'Content-Type': 'application/json'
-          }
+            "Content-Type": "application/json",
+          },
         });
 
         // Check if the response is OK (status 200-299)
@@ -24,11 +23,11 @@ function useFetchAllUsers() {
         }
 
         const data = await response.json(); // Wait for the JSON conversion
-        console.log('API response:', data); // Log the full API response
+        console.log("API response:", data); // Log the full API response
 
         setUsers(data.users || data); // Assuming the response contains an array or a 'users' field
       } catch (err) {
-        console.error('Fetch error:', err); // Log any errors
+        console.error("Fetch error:", err); // Log any errors
         setError(err.message); // Handle the error
       } finally {
         setLoading(false); // Stop loading

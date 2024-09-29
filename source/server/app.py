@@ -5,7 +5,6 @@ from flask import Flask, jsonify
 from flask_cors import CORS
 from dotenv import load_dotenv
 from qdrant_client import QdrantClient
-from sentence_transformers import SentenceTransformer
 from qdrant_client.models import NamedVector
 from qdrant_client.http import models
 
@@ -14,7 +13,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Load environment variables from .env file
-load_dotenv("..//.env.local")
+load_dotenv()
 
 # Qdrant API key from environment variables
 QDRANT_API_KEY = os.getenv("Q_KEY")
@@ -146,9 +145,6 @@ def get_recommended_posts(user_id):
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
-
-from qdrant_client.http import models
 
 
 @app.route("/users/<int:user_id>/postsovertime", methods=["GET"])
@@ -461,10 +457,11 @@ def get_users():
             users.append(user.payload)
 
         # Return the user data as a JSON response
-        return jsonify({'users': users}), 200
+        return jsonify({"users": users}), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 
 # API endpoint to get user data by user ID from the Qdrant collection
 @app.route("/user/<int:user_id>/summary", methods=["GET"])

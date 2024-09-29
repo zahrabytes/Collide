@@ -73,10 +73,10 @@ function Post({ post }) {
         <p className={styles.time}>{formattedDate}</p>
       </section>
       <section className={styles.bottomRight}>
-        <p className={styles.content}>
+        <div className={styles.content}>
           <h2 className={styles.title}>{post.payload.title}</h2>
           <p className={styles.body}>{post.payload.plain_text_body}</p>
-        </p>
+        </div>
         <PlaceholderImage />
         <div className={styles.stats}>
           <div className={styles.stat}>
