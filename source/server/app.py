@@ -2,79 +2,70 @@ import os
 import openai
 import numpy as np
 from flask import Flask, jsonify
+from flask_cors import CORS
 from dotenv import load_dotenv
 from qdrant_client import QdrantClient
 from sentence_transformers import SentenceTransformer
 
 # Initialize Flask app
 app = Flask(__name__)
+CORS(app)
 
 # Load environment variables from .env file
-load_dotenv('..//.env.local')
+load_dotenv("..//.env.local")
 
 # Qdrant API key from environment variables
-QDRANT_API_KEY = os.getenv('Q_KEY')
-QDRANT_URL = os.getenv('Q_URL')
-OPENAI_KEY = os.getenv('OPENAI_KEY')
+QDRANT_API_KEY = os.getenv("Q_KEY")
+QDRANT_URL = os.getenv("Q_URL")
+OPENAI_KEY = os.getenv("OPENAI_KEY")
 
-openai.api_key=OPENAI_KEY
+openai.api_key = OPENAI_KEY
 
 # Initialize Qdrant client with API key
-client = QdrantClient(
-    url=QDRANT_URL, 
-    api_key=QDRANT_API_KEY
-)
+client = QdrantClient(url=QDRANT_URL, api_key=QDRANT_API_KEY)
 
-RECORDS_LIMIT=5000
+RECORDS_LIMIT = 5000
 
 vector_dimension = 384
 default_vector = [0.0] * vector_dimension
 
+
 def retrieve_like_ids(user_id: int):
     likes_result = client.scroll(
         collection_name="likes",
-        scroll_filter={
-            "must": [
-                {
-                    "key": "authorable_id",
-                    "match": {"value": user_id}
-                }
-            ]
-        },
+        scroll_filter={"must": [{"key": "authorable_id", "match": {"value": user_id}}]},
         limit=RECORDS_LIMIT,
         with_payload=True,
-        with_vectors=False
+        with_vectors=False,
     )
-    user_likes_ids = [point.payload.get('likeable_id', '')for point in likes_result[0]]
+    user_likes_ids = [point.payload.get("likeable_id", "") for point in likes_result[0]]
 
     return user_likes_ids
+
 
 def retrieve_dislike_ids(user_id: int):
     dislikes_result = client.scroll(
         collection_name="dislikes",
-        scroll_filter={
-            "must": [
-                {
-                    "key": "authorable_id",
-                    "match": {"value": user_id}
-                }
-            ]
-        },
+        scroll_filter={"must": [{"key": "authorable_id", "match": {"value": user_id}}]},
         limit=RECORDS_LIMIT,
         with_payload=True,
-        with_vectors=False
+        with_vectors=False,
     )
 
-    user_dislikes_ids = [point.payload.get('dislikeable_id', '')for point in dislikes_result[0]]
+    user_dislikes_ids = [
+        point.payload.get("dislikeable_id", "") for point in dislikes_result[0]
+    ]
 
     return user_dislikes_ids
 
-# API endpoint to check if the server is running
-@app.route('/')
-def home():
-    return jsonify({'message': 'Flask server is running'}), 200
 
-@app.route('/users/<int:user_id>/recommendedPosts', methods=['GET'])
+# API endpoint to check if the server is running
+@app.route("/")
+def home():
+    return jsonify({"message": "Flask server is running"}), 200
+
+
+@app.route("/users/<int:user_id>/recommendedposts", methods=["GET"])
 def get_recommended_posts(user_id):
 
     likes = retrieve_like_ids(user_id)
@@ -88,26 +79,34 @@ def get_recommended_posts(user_id):
             collection_name="collected_user_data",
             ids=[user_id],
             with_payload=True,
-            with_vectors=True
+            with_vectors=True,
         )
-        
+
         if result:
             point = result[0]
-            
+
             # Safely get vectors, using the default if a vector is missing or empty
-            posts_vector = np.array(point.vector.get('posts_vector', default_vector) or default_vector)
-            comments_vector = np.array(point.vector.get('comments_vector', default_vector) or default_vector)
-            likes_vector = np.array(point.vector.get('likes_vector', default_vector) or default_vector)
-            dislikes_vector = np.array(point.vector.get('dislikes_vector', default_vector) or default_vector)
-            
+            posts_vector = np.array(
+                point.vector.get("posts_vector", default_vector) or default_vector
+            )
+            comments_vector = np.array(
+                point.vector.get("comments_vector", default_vector) or default_vector
+            )
+            likes_vector = np.array(
+                point.vector.get("likes_vector", default_vector) or default_vector
+            )
+            dislikes_vector = np.array(
+                point.vector.get("dislikes_vector", default_vector) or default_vector
+            )
+
             # Combine embeddings
             combined_embedding = (
-                0.4 * posts_vector +
-                0.3 * comments_vector +
-                0.2 * likes_vector -
-                0.1 * dislikes_vector
+                0.4 * posts_vector
+                + 0.3 * comments_vector
+                + 0.2 * likes_vector
+                - 0.1 * dislikes_vector
             )
-            
+
             # Do semantic search against the posts collection
             search_result = client.search(
                 collection_name="posts",
@@ -117,56 +116,48 @@ def get_recommended_posts(user_id):
                     "must_not": [
                         # Exclude posts with IDs from likes and dislikes
                         *[
-                            {
-                                "key": "id",
-                                "match": {
-                                    "value": post_id
-                                }
-                            } for post_id in exclude_posts
+                            {"key": "id", "match": {"value": post_id}}
+                            for post_id in exclude_posts
                         ],
-                        
                         # Exclude posts authored by the user
                         {
-                            "key": "authorable_id",  
-                            "match": {
-                                "value": user_id  # Exclude user's own posts
-                            }
-                        }
+                            "key": "authorable_id",
+                            "match": {"value": user_id},  # Exclude user's own posts
+                        },
                     ]
-                }
+                },
             )
-            
-            posts = [{
-                'id': scored_point.id,
-                'score': scored_point.score,
-                'payload': scored_point.payload
-            } for scored_point in search_result]
-            
-            return jsonify({'posts': posts})
+
+            posts = [
+                {
+                    "id": scored_point.id,
+                    "score": scored_point.score,
+                    "payload": scored_point.payload,
+                }
+                for scored_point in search_result
+            ]
+
+            return jsonify({"posts": posts})
 
         else:
             return jsonify({"error": f"Data not found for user {user_id}"}), 404
-            
+
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 
-@app.route('/trendingtopics', methods=['GET'])
-def get_trendingtopics():
+@app.route("/trendingtopics", methods=["GET"])
+def get_trending_topics():
     try:
         collected_post_result = client.scroll(
-            collection_name="posts",
-            with_payload=True,
-            with_vectors=False
+            collection_name="posts", with_payload=True, with_vectors=False
         )
 
         if not collected_post_result or len(collected_post_result) == 0:
             return jsonify({"error": "posts not found"}), 404
-        
+
         collected_comment_result = client.scroll(
-            collection_name="comments",
-            with_payload=True,
-            with_vectors=False
+            collection_name="comments", with_payload=True, with_vectors=False
         )
 
         if not collected_post_result or len(collected_comment_result) == 0:
@@ -175,61 +166,77 @@ def get_trendingtopics():
         # Rest of OpenAI code...
         response = openai.chat.completions.create(
             model="gpt-4o-mini",
-            messages=[{
-                "role": "user",
-                "content": f"This is collected data from a userbase. Give me a list of 20 trending topics (they must be quality topics, not just frequently mentioned words, two words each, in list separated by commas, without summarry): {collected_post_result} {collected_comment_result}",
-            }],
+            messages=[
+                {
+                    "role": "user",
+                    "content": f"""
+                        Some collected data from a userbase will be provided. Return a list of 20
+                        trending topics based on the data, following these rules:
+                        
+                        - They MUST be QUALITY topics, NOT just frequently mentioned words.
+                        - Each topic MUST be EXACTLY one word, preferably less than 8 characters.
+                        - Capitalize the first letter of each topic.
+                        - Topics MUST be RELEVANT to the userbase, NOT general or random.
+                        - Output MUST be a JSON array with topics as strings WITHOUT a summary
+                        - DO NOT provide any backticks or unnecessary whitespace, just provide RAW
+                          JSON that can be dropped directly into code without any preprocessing
+                        - Bonus points if you can mix in some of the following topics:
+                            "AI", "Data", "Software", "Oil", "Rig", "Upstream", "Drilling", "Fracking",
+                            "Engineering", "Revenue", "Reservoir", "Seismic", "Renewable", "Energy", "Gas",
+                            "Solar", "Wind", "Hydro", "Nuclear", "Coal"
+
+                        The data provided is as follows:
+                        
+                        {collected_post_result} {collected_comment_result}
+                    """,
+                }
+            ],
         )
-        return jsonify(response.choices[0].message.content), 200
+
+        topics = response.choices[0].message.content
+
+        # No need to jsonify the response since it's already properly formatted
+        return (topics, 200)
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@app.route('/users/count', methods=['GET'])
+
+@app.route("/users/count", methods=["GET"])
 def get_user_count():
     try:
         collection_info = client.get_collection("collected_user_data")
         total_users = collection_info.points_count
 
-        return jsonify({'total_users': total_users})
+        return jsonify({"total_users": total_users})
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 
-@app.route('/users', methods=['GET'])
+@app.route("/users", methods=["GET"])
 def get_users():
     try:
         users_result = client.scroll(
             collection_name="users",
             limit=RECORDS_LIMIT,
             with_payload=True,
-            with_vectors=False
+            with_vectors=False,
         )
+
+        print(type(users_result[0]))
 
         # If no result is found, return 404
         if not users_result or len(users_result[0]) == 0:
             return jsonify({"error": "Users not found"}), 404
-        
-        # Extract user data from the collected_data_result
-        users_data = []
-        for user in users_result[0]:
-            # Check if the payload matches the structure we want to exclude
-            excluded_payload = {
-                "posts": "",
-                "comments": "",
-                "likes": "",
-                "dislikes": ""
-            }
-            if user_collected_data[0].payload != excluded_payload:
-                users_data.append(user.payload)
 
-        # If all users were filtered out, return 404
-        if len(users_data) == 0:
-            return jsonify({"error": "No qualifying users found"}), 404
+        users = {}
+
+        for user in users_result[0]:
+            users[user.payload['id']] = user.payload
 
         # Return the filtered user data as a JSON response
-        return jsonify(users_data), 200
+        return jsonify({'user_results': users}), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -244,26 +251,28 @@ def get_user_summary(user_id):
             collection_name="collected_user_data",
             ids=[user_id],
             with_payload=True,
-            with_vectors=False
+            with_vectors=False,
         )
-        
+
         # If no result is found, return 404
         if not collected_data_result or len(collected_data_result) == 0:
             return jsonify({"error": "User not found"}), 404
-        
+
         # Extract user data from the collected_data_result
         user_data = collected_data_result[0].payload
 
-        # Pass user data to OpenAI 
+        # Pass user data to OpenAI
         openai_prompt = f"This is collected data from a user. Make me a summary about them {user_data}"
 
         # Rest of OpenAI code...
         response = openai.chat.completions.create(
             model="gpt-4o-mini",
-            messages=[{
-                "role": "user",
-                "content": openai_prompt,
-            }],
+            messages=[
+                {
+                    "role": "user",
+                    "content": openai_prompt,
+                }
+            ],
         )
 
         # Return the user data as a JSON response
@@ -272,7 +281,8 @@ def get_user_summary(user_id):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
         
-@app.route('/user/<int:user_id>', methods=['GET'])
+
+@app.route("/user/<int:user_id>", methods=["GET"])
 def get_user(user_id):
     try:
         # Retrieve user data from Qdrant using the user ID
@@ -280,11 +290,11 @@ def get_user(user_id):
             collection_name="users",
             ids=[user_id],
             with_payload=True,
-            with_vectors=False
+            with_vectors=False,
         )
 
         print(user_data)
-        
+
         # If no result is found, return 404
         if not user_data or len(user_data) == 0:
             return jsonify({"error": "User not found"}), 404
@@ -295,5 +305,6 @@ def get_user(user_id):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     app.run(debug=True)
