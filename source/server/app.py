@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 from qdrant_client import QdrantClient
 from sentence_transformers import SentenceTransformer
 from qdrant_client.models import NamedVector
-
+from qdrant_client.http import models
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -146,6 +146,41 @@ def get_recommended_posts(user_id):
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+from qdrant_client.http import models
+
+@app.route("/users/<int:user_id>/postsovertime", methods=["GET"])
+def get_posts_over_time(user_id):
+    try:
+        # Use scroll with scroll_filter for filtering
+        result, next_offset = client.scroll(
+            collection_name="posts",
+            scroll_filter=models.Filter(
+                must=[
+                    models.FieldCondition(
+                        key="authorable_id",  # Field to filter on
+                        match=models.MatchValue(value=user_id)  # Value to match
+                    )
+                ]
+            ),
+            limit=2000,  # Define the number of results per scroll
+            with_payload=True,
+            with_vectors=False
+        )
+
+        posts_over_time = [
+            {
+                "id": pt.id,
+                "created_at": pt.payload.get("created_at") if pt.payload else None
+            }
+            for pt in result
+        ]
+
+        return jsonify(posts_over_time), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
         
 @app.route("/users/<int:user_id>/recommendedusers", methods=["GET"])
 def get_recommended_users(user_id):
