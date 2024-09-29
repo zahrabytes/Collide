@@ -4,6 +4,15 @@ import numpy as np
 from qdrant_client.http import models
 from sentence_transformers import SentenceTransformer
 from qdrant_client import QdrantClient
+from dotenv import load_dotenv
+import os
+
+# Load environment variables from .env file
+load_dotenv('../.env.local')
+
+# Qdrant API key from environment variables
+Q_KEY = os.getenv('Q_KEY')
+Q_URL = os.getenv('Q_URL')
 
 client = QdrantClient(
     url=SECRET_URL, 

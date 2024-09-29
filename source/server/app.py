@@ -6,6 +6,8 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 from qdrant_client import QdrantClient
 from sentence_transformers import SentenceTransformer
+from qdrant_client.models import NamedVector
+from qdrant_client.http import models
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -65,7 +67,7 @@ def home():
     return jsonify({"message": "Flask server is running"}), 200
 
 
-@app.route("/users/<int:user_id>/recommendedPosts", methods=["GET"])
+@app.route("/users/<int:user_id>/recommendedposts", methods=["GET"])
 def get_recommended_posts(user_id):
 
     likes = retrieve_like_ids(user_id)
@@ -145,8 +147,110 @@ def get_recommended_posts(user_id):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+from qdrant_client.http import models
 
-@app.route("/trendingTopics", methods=["GET"])
+@app.route("/users/<int:user_id>/postsovertime", methods=["GET"])
+def get_posts_over_time(user_id):
+    try:
+        # Use scroll with scroll_filter for filtering
+        result, next_offset = client.scroll(
+            collection_name="posts",
+            scroll_filter=models.Filter(
+                must=[
+                    models.FieldCondition(
+                        key="authorable_id",  # Field to filter on
+                        match=models.MatchValue(value=user_id)  # Value to match
+                    )
+                ]
+            ),
+            limit=2000,  # Define the number of results per scroll
+            with_payload=True,
+            with_vectors=False
+        )
+
+        posts_over_time = [
+            {
+                "id": pt.id,
+                "created_at": pt.payload.get("created_at") if pt.payload else None
+            }
+            for pt in result
+        ]
+
+        return jsonify(posts_over_time), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+        
+@app.route("/users/<int:user_id>/recommendedusers", methods=["GET"])
+def get_recommended_users(user_id):
+
+    try:
+        # Retrieve a single point by ID
+        result = client.retrieve(
+            collection_name="collected_user_data",
+            ids=[user_id],
+            with_payload=True,
+            with_vectors=True
+        )
+        
+        if result:
+            point = result[0]
+            
+            # Safely get vectors, using the default if a vector is missing or empty
+            posts_vector = np.array(point.vector.get('posts_vector', default_vector) or default_vector)
+            comments_vector = np.array(point.vector.get('comments_vector', default_vector) or default_vector)
+            likes_vector = np.array(point.vector.get('likes_vector', default_vector) or default_vector)
+            dislikes_vector = np.array(point.vector.get('dislikes_vector', default_vector) or default_vector)
+            
+            # Create a combined vector (you can adjust the weights as needed)
+            combined_vector = (
+                0.4 * posts_vector +
+                0.3 * comments_vector +
+                0.2 * likes_vector -
+                0.1 * dislikes_vector
+            )
+
+            # Create NamedVector for the query, specifying which vector to compare against
+            query_vector = NamedVector(name="posts_vector", vector=combined_vector.tolist())
+            
+            # Do semantic search against the collected_user_data collection
+            search_result = client.search(
+                collection_name="collected_user_data",
+                query_vector=query_vector,
+                query_filter={
+                    "must_not": [
+                        {
+                            "key": "id",  
+                            "match": {"value": user_id},  # Exclude the user's own profile
+                        },
+                    ],
+                },
+                limit=20  # Adjust the limit as needed
+            )
+            
+            results = [
+                {
+                    'id': scored_point.id,
+                    'score': scored_point.score,
+                    #'payload': scored_point.payload
+                } 
+                for scored_point in search_result 
+                if str(scored_point.id) != str(user_id)
+            ][:20] 
+
+            return (results, 200)
+            
+            # print(f"Id of the user {user_id}")
+            # print(f"Results of the search {results}")
+        else:
+            print(f"No data found for user {user_id}")
+            
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/trendingtopics", methods=["GET"])
 def get_trending_topics():
     try:
         collected_post_result = client.scroll(
@@ -174,16 +278,12 @@ def get_trending_topics():
                         trending topics based on the data, following these rules:
                         
                         - They MUST be QUALITY topics, NOT just frequently mentioned words.
-                        - Each topic MUST be EXACTLY one word, preferably less than 8 characters.
+                        - Each topic MUST be EXACTLY one word.
                         - Capitalize the first letter of each topic.
                         - Topics MUST be RELEVANT to the userbase, NOT general or random.
                         - Output MUST be a JSON array with topics as strings WITHOUT a summary
                         - DO NOT provide any backticks or unnecessary whitespace, just provide RAW
                           JSON that can be dropped directly into code without any preprocessing
-                        - Bonus points if you can mix in some of the following topics:
-                            "AI", "Data", "Software", "Oil", "Rig", "Upstream", "Drilling", "Fracking",
-                            "Engineering", "Revenue", "Reservoir", "Seismic", "Renewable", "Energy", "Gas",
-                            "Solar", "Wind", "Hydro", "Nuclear", "Coal"
 
                         The data provided is as follows:
                         
@@ -197,6 +297,61 @@ def get_trending_topics():
 
         # No need to jsonify the response since it's already properly formatted
         return (topics, 200)
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/user/<int:user_id>/interests/<string:topics>", methods=["GET"])
+def get_user_interests(user_id, topics):
+    try:
+        collected_user_data = client.retrieve(
+            collection_name="collected_user_data",
+            ids=[user_id],
+            with_payload=True,
+            with_vectors=False,
+        )
+
+        # Rest of OpenAI code...
+        response = openai.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {
+                    "role": "user",
+                    "content": f"""
+                        Some collected data from a user will be provided. 
+                        Your first task is to return a list of 5 of their 
+                        interests based on the data, following these rules:
+                        
+                        - They MUST be QUALITY interests, NOT just frequently mentioned words.
+                        - Each interest must have a weight associated with its importance to 
+                          the user, adding up to 100
+                        - Each interest MUST be EXACTLY one word.
+                        - Capitalize the first letter of each interests.
+                        - Topics MUST be RELEVANT to the userbase, NOT general or random.
+                        - Output MUST be a JSON array with interests as strings WITHOUT a summary
+                        - DO NOT provide any backticks or unnecessary whitespace, just provide RAW
+                          JSON that can be dropped directly into code without any preprocessing
+
+                        Your second task will be to collect user opinion on a 
+                        list of trending topics, following these rules:
+
+                        - Weight each topic on a scale of -1 to 1, where -1 is highly likely to 
+                          interact negatively, and 1 is highly likely to interact positively. 
+                        - DO NOT provide any backticks or unnecessary whitespace, just provide RAW
+                          JSON that can be dropped directly into code without any preprocessing
+
+                        The data provided is as follows:
+                        
+                        {collected_user_data} {topics}
+                    """,
+                }
+            ],
+        )
+
+        interests = response.choices[0].message.content
+
+        # No need to jsonify the response since it's already properly formatted
+        return (interests, 200)
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -224,36 +379,26 @@ def get_users():
             with_vectors=False,
         )
 
+        print(type(users_result[0]))
+
         # If no result is found, return 404
         if not users_result or len(users_result[0]) == 0:
             return jsonify({"error": "Users not found"}), 404
 
-        # Extract user data from the collected_data_result
-        users_data = []
-        for user in users_result[0]:
-            # Check if the payload matches the structure we want to exclude
-            excluded_payload = {
-                "posts": "",
-                "comments": "",
-                "likes": "",
-                "dislikes": "",
-            }
-            if user.payload != excluded_payload:
-                users_data.append(user.payload)
+        users = {}
 
-        # If all users were filtered out, return 404
-        if len(users_data) == 0:
-            return jsonify({"error": "No qualifying users found"}), 404
+        for user in users_result[0]:
+            users[user.payload['id']] = user.payload
 
         # Return the filtered user data as a JSON response
-        return jsonify(users_data), 200
+        return jsonify({'user_results': users}), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 
 # API endpoint to get user data by user ID from the Qdrant collection
-@app.route("/user/<int:user_id>/summary", methods=["GET"])
+@app.route('/user/<int:user_id>/summary', methods=['GET'])
 def get_user_summary(user_id):
     try:
         # Retrieve user data from Qdrant using the user ID
@@ -290,7 +435,7 @@ def get_user_summary(user_id):
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
+        
 
 @app.route("/user/<int:user_id>", methods=["GET"])
 def get_user(user_id):
