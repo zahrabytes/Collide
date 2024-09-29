@@ -6,6 +6,8 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 from qdrant_client import QdrantClient
 from sentence_transformers import SentenceTransformer
+from qdrant_client.models import NamedVector
+
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -142,6 +144,61 @@ def get_recommended_posts(user_id):
         else:
             return jsonify({"error": f"Data not found for user {user_id}"}), 404
 
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+        
+@app.route("/users/<int:user_id>/recommendedusers", methods=["GET"])
+def get_recommended_users(user_id):
+
+    try:
+        # Retrieve a single point by ID
+        result = client.retrieve(
+            collection_name="collected_user_data",
+            ids=[user_id],
+            with_payload=True,
+            with_vectors=True
+        )
+        
+        if result:
+            point = result[0]
+            
+            # Safely get vectors, using the default if a vector is missing or empty
+            posts_vector = np.array(point.vector.get('posts_vector', default_vector) or default_vector)
+            comments_vector = np.array(point.vector.get('comments_vector', default_vector) or default_vector)
+            likes_vector = np.array(point.vector.get('likes_vector', default_vector) or default_vector)
+            dislikes_vector = np.array(point.vector.get('dislikes_vector', default_vector) or default_vector)
+            
+            # Create a combined vector (you can adjust the weights as needed)
+            combined_vector = (
+                0.4 * posts_vector +
+                0.3 * comments_vector +
+                0.2 * likes_vector -
+                0.1 * dislikes_vector
+            )
+
+            # Create NamedVector for the query, specifying which vector to compare against
+            query_vector = NamedVector(name="likes_vector", vector=combined_vector.tolist())
+            
+            # Do semantic search against the collected_user_data collection
+            search_result = client.search(
+                collection_name="collected_user_data",
+                query_vector=query_vector,
+                limit=20  # Adjust the limit as needed
+            )
+            
+            results = [{
+                'id': scored_point.id,
+                'score': scored_point.score,
+                #'payload': scored_point.payload
+            } for scored_point in search_result]
+
+            return (results, 200)
+            
+            # print(f"Id of the user {user_id}")
+            # print(f"Results of the search {results}")
+        else:
+            print(f"No data found for user {user_id}")
+            
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
