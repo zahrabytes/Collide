@@ -4,7 +4,7 @@ import { Analytics } from "../Analytics/Analytics";
 import { Summary } from "../Summary/Summary";
 import styles from "./CenterColumn.module.scss";
 
-function CenterColumn() {
+function CenterColumn({ userId }) {
   const [selectedPage, setselectedPage] = useState("suggested");
   const updateSelectedPage = (page) => setselectedPage(page);
   return (
@@ -29,7 +29,7 @@ function CenterColumn() {
           Summary
         </div>
       </div>
-      {selectedPage === "suggested" && <Posts />}
+      {selectedPage === "suggested" && <Posts userId={userId} />}
       {selectedPage === "analytics" && <Analytics />}
       {selectedPage === "summary" && <Summary />}
     </div>

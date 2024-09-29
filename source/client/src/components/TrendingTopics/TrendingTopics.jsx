@@ -1,26 +1,20 @@
-import { useState, useEffect } from "react";
+import { useTrendingTopics } from "../../hooks/useTrendingTopics";
 import styles from "./TrendingTopics.module.scss";
 
 function TrendingTopics() {
-  const [topics, setTopics] = useState([]);
-  const endpoint = "http://127.0.0.1:5000/trendingTopics";
-
-  useEffect(() => {
-    fetch(endpoint)
-      .then((response) => response.json())
-      .then((data) => setTopics(data));
-  }, []);
-
+  const topics = useTrendingTopics();
   return (
     <div className={styles.container}>
       <h2 className={styles.h2}>Trending Topics</h2>
-      <div className={styles.topics}>
-        {topics.map((topic, index) => (
-          <div className={styles.topic} key={index}>
-            {topic}
-          </div>
-        ))}
-      </div>
+      {!topics.length ? null : (
+        <div className={styles.topics}>
+          {topics.map((topic, index) => (
+            <div className={styles.topic} key={index}>
+              {topic}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

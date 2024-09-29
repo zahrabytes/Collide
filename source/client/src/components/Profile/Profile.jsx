@@ -1,6 +1,8 @@
+import { useUser } from "../../hooks/useUser";
 import styles from "./Profile.module.scss";
 
-function Profile() {
+function Profile({ userId }) {
+  const user = useUser(userId);
   return (
     <div className={styles.profile}>
       <img
@@ -9,18 +11,12 @@ function Profile() {
         alt=""
       />
       <div className={styles.avatarContainer}>
-        <img
-          className={styles.avatar}
-          src="https://xsgames.co/randomusers/avatar.php?g=male"
-          alt=""
-        />
+        <img className={styles.avatar} src={user.profile_picture} alt="" />
       </div>
       <div className={styles.info}>
-        <h2 className={styles.name}>Yeremias NJ</h2>
-        <h3 className={styles.username}>@notojoyoo</h3>
-        <p className={styles.bio}>
-          Lorem ipsum dolor sit amet, con secte tur adi piscing alt pan ✨
-        </p>
+        <h2 className={styles.name}>{user.name}</h2>
+        <h3 className={styles.username}>@{user.username}</h3>
+        {user.biography && <p className={styles.bio}>{user.biography}</p>}
       </div>
       <div className={styles.stats}>
         <div className={styles.stat}>

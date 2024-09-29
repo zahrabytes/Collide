@@ -33,7 +33,7 @@
     transition: 0.3s ease;
 
     &::placeholder {
-      color: colors.$grey;
+      color: lighten(colors.$grey, 10%);
     }
 
     &:hover {
@@ -60,7 +60,7 @@
     transition: 0.3s ease;
 
     &::placeholder {
-      color: colors.$grey;
+      color: lighten(colors.$grey, 10%);
     }
 
     &:hover {

@@ -1,32 +1,20 @@
 import { Post } from "../Post/Post";
+import { useRecommendedPosts } from "../../hooks/useRecommendedPosts";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleQuestion } from "@fortawesome/free-solid-svg-icons";
 import { faComments } from "@fortawesome/free-solid-svg-icons";
 import { faSquarePollVertical } from "@fortawesome/free-solid-svg-icons";
 import { faNewspaper } from "@fortawesome/free-solid-svg-icons";
+import { useUser } from "../../hooks/useUser";
 import styles from "./Posts.module.scss";
 
-import { useEffect, useState } from "react";
-
-function Posts() {
-  const [posts, setPosts] = useState([]);
-  const endpoint = "http://127.0.0.1:5000/users/1/recommendedPosts";
-
-  useEffect(() => {
-    fetch(endpoint)
-      .then((response) => response.json())
-      .then((data) => data.posts)
-      .then((posts) => setPosts(posts));
-  }, []);
-
+function Posts({ userId }) {
+  const user = useUser(userId);
+  const posts = useRecommendedPosts(userId);
   return (
     <>
       <div className={styles.create}>
-        <img
-          className={styles.avatar}
-          src="https://xsgames.co/randomusers/avatar.php?g=male"
-          alt=""
-        />
+        <img className={styles.avatar} src={user.profile_picture} alt="" />
         <div className={styles.right}>
           <input
             className={styles.input}

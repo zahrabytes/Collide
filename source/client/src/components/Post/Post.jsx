@@ -7,6 +7,7 @@ import { faThumbsUp } from "@fortawesome/free-solid-svg-icons";
 import { faThumbsDown } from "@fortawesome/free-solid-svg-icons";
 import { faArrowUpFromBracket } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "../ActionButton/ActionButton";
+import { useUser } from "../../hooks/useUser";
 import styles from "./Post.module.scss";
 
 const formatDate = (dateString) => {
@@ -46,24 +47,22 @@ function PlaceholderImage() {
 }
 
 function Post({ post }) {
+  const authorUserId = post.payload.authorable_id;
+  const author = useUser(authorUserId);
   const formattedDate = formatDate(post.payload.created_at);
   return (
     <div className={styles.post}>
       <section className={styles.topLeft}>
         <img
           className={styles.avatar}
-          // Todo
-          // src={user.picture.thumbnail}
+          src={author.profile_picture}
           alt="Avatar"
         />
       </section>
       <section className={styles.topRight}>
         <div className={styles.topRow}>
           <div className={styles.user}>
-            <h3 className={styles.name}>
-              {/* Todo */}
-              First Last
-            </h3>
+            <h3 className={styles.name}>{author.name}</h3>
           </div>
           <FontAwesomeIcon
             className={styles.ellipsis}
@@ -82,19 +81,19 @@ function Post({ post }) {
         <div className={styles.stats}>
           <div className={styles.stat}>
             <div className={`${styles.iconContainer} ${styles.red}`}>
-              <FontAwesomeIcon icon={faBolt} size="s" />
+              <FontAwesomeIcon icon={faBolt} />
             </div>
             <p className={styles.statNumber}>1</p>
           </div>
           <div className={styles.stat}>
             <div className={`${styles.iconContainer} ${styles.green}`}>
-              <FontAwesomeIcon icon={faComment} size="s" />
+              <FontAwesomeIcon icon={faComment} />
             </div>
             <p className={styles.statNumber}>2</p>
           </div>
           <div className={styles.stat}>
             <div className={`${styles.iconContainer} ${styles.blue}`}>
-              <FontAwesomeIcon icon={faShare} size="s" />
+              <FontAwesomeIcon icon={faShare} />
             </div>
             <p className={styles.statNumber}>3</p>
           </div>
