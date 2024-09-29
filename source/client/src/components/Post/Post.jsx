@@ -9,6 +9,30 @@ import { faArrowUpFromBracket } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "../ActionButton/ActionButton";
 import styles from "./Post.module.scss";
 
+const formatDate = (dateString) => {
+  const replaceSecondOccurrence = (str, substr, replacement) => {
+    let parts = str.split(substr);
+    if (parts.length > 2)
+      return parts[0] + substr + parts.slice(1).join(replacement);
+    return str;
+  };
+
+  const options = {
+    year: "numeric",
+    month: "short", // "MMM"
+    day: "2-digit", // "DD"
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true, // Use 12-hour format with AM/PM
+  };
+
+  const date = new Date(dateString);
+  const almostFormatted = date.toLocaleString("en-US", options);
+  const formattedDate = replaceSecondOccurrence(almostFormatted, ",", " at");
+
+  return formattedDate;
+};
+
 function PlaceholderImage() {
   const width = 1250 + Math.floor(Math.random() * 500 - 500);
   const height = 500 + Math.floor(Math.random() * 250 - 150);
@@ -21,16 +45,15 @@ function PlaceholderImage() {
   ) : null;
 }
 
-function Post({ user }) {
-  const lorem =
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse lorem risus, congue sollicitudin mi vel, aliquam viverra eros. In finibus volutpat lobortis. Sed mollis, massa vitae feugiat porta, leo urna lacinia dolor, sit amet gravida eros mi vitae neque. Praesent consectetur, odio id fringilla dictum, turpis ipsum auctor est, ac aliquam elit tortor vel nulla. Nulla facilisi. Sed libero lacus, sagittis eu neque quis, blandit finibus est. Sed posuere, mauris rhoncus rutrum porttitor, nisi nulla vestibulum ante, a auctor purus erat et justo.";
-  const paragraph = lorem.slice(0, Math.floor(Math.random() * lorem.length));
+function Post({ post }) {
+  const formattedDate = formatDate(post.payload.created_at);
   return (
     <div className={styles.post}>
       <section className={styles.topLeft}>
         <img
           className={styles.avatar}
-          src={user.picture.thumbnail}
+          // Todo
+          // src={user.picture.thumbnail}
           alt="Avatar"
         />
       </section>
@@ -38,9 +61,9 @@ function Post({ user }) {
         <div className={styles.topRow}>
           <div className={styles.user}>
             <h3 className={styles.name}>
-              {user.name.first} {user.name.last}
+              {/* Todo */}
+              First Last
             </h3>
-            <h4 className={styles.username}>@{user.login.username}</h4>
           </div>
           <FontAwesomeIcon
             className={styles.ellipsis}
@@ -48,12 +71,12 @@ function Post({ user }) {
             size="lg"
           />
         </div>
-        <p className={styles.time}>Few minutes ago</p>
+        <p className={styles.time}>{formattedDate}</p>
       </section>
       <section className={styles.bottomRight}>
         <p className={styles.content}>
-          <h2 className={styles.title}>Post Title</h2>
-          <p className={styles.body}> {paragraph}</p>
+          <h2 className={styles.title}>{post.payload.title}</h2>
+          <p className={styles.body}>{post.payload.plain_text_body}</p>
         </p>
         <PlaceholderImage />
         <div className={styles.stats}>

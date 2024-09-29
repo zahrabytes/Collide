@@ -66,11 +66,25 @@
   .content {
     display: flex;
     flex-direction: column;
-    gap: 0.5em;
+    gap: 0.75em;
 
     .title {
       font-size: 1.25em;
       font-weight: 600;
+
+      overflow: hidden;
+      display: -webkit-box;
+      line-clamp: 1;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+    }
+
+    .body {
+      overflow: hidden;
+      display: -webkit-box;
+      line-clamp: 4;
+      -webkit-line-clamp: 4;
+      -webkit-box-orient: vertical;
     }
   }
 

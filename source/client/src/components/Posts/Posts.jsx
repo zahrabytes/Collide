@@ -1,5 +1,4 @@
 import { Post } from "../Post/Post";
-import { useFetchUsers } from "../../hooks/useFetchUsers";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleQuestion } from "@fortawesome/free-solid-svg-icons";
 import { faComments } from "@fortawesome/free-solid-svg-icons";
@@ -7,8 +6,19 @@ import { faSquarePollVertical } from "@fortawesome/free-solid-svg-icons";
 import { faNewspaper } from "@fortawesome/free-solid-svg-icons";
 import styles from "./Posts.module.scss";
 
+import { useEffect, useState } from "react";
+
 function Posts() {
-  const users = useFetchUsers(10);
+  const [posts, setPosts] = useState([]);
+  const endpoint = "http://127.0.0.1:5000/users/1/recommendedPosts";
+
+  useEffect(() => {
+    fetch(endpoint)
+      .then((response) => response.json())
+      .then((data) => data.posts)
+      .then((posts) => setPosts(posts));
+  }, []);
+
   return (
     <>
       <div className={styles.create}>
@@ -57,8 +67,8 @@ function Posts() {
           </div>
         </div>
       </div>
-      {users.map((user, index) => (
-        <Post user={user} key={index} />
+      {posts.map((post, index) => (
+        <Post post={post} key={index} />
       ))}
     </>
   );
