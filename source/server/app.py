@@ -174,16 +174,12 @@ def get_trending_topics():
                         trending topics based on the data, following these rules:
                         
                         - They MUST be QUALITY topics, NOT just frequently mentioned words.
-                        - Each topic MUST be EXACTLY one word, preferably less than 8 characters.
+                        - Each topic MUST be EXACTLY one word.
                         - Capitalize the first letter of each topic.
                         - Topics MUST be RELEVANT to the userbase, NOT general or random.
                         - Output MUST be a JSON array with topics as strings WITHOUT a summary
                         - DO NOT provide any backticks or unnecessary whitespace, just provide RAW
                           JSON that can be dropped directly into code without any preprocessing
-                        - Bonus points if you can mix in some of the following topics:
-                            "AI", "Data", "Software", "Oil", "Rig", "Upstream", "Drilling", "Fracking",
-                            "Engineering", "Revenue", "Reservoir", "Seismic", "Renewable", "Energy", "Gas",
-                            "Solar", "Wind", "Hydro", "Nuclear", "Coal"
 
                         The data provided is as follows:
                         
@@ -197,6 +193,61 @@ def get_trending_topics():
 
         # No need to jsonify the response since it's already properly formatted
         return (topics, 200)
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/user/<int:user_id>/interests/<string:topics>", methods=["GET"])
+def get_user_interests(user_id, topics):
+    try:
+        collected_user_data = client.retrieve(
+            collection_name="collected_user_data",
+            ids=[user_id],
+            with_payload=True,
+            with_vectors=False,
+        )
+
+        # Rest of OpenAI code...
+        response = openai.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {
+                    "role": "user",
+                    "content": f"""
+                        Some collected data from a user will be provided. 
+                        Your first task is to return a list of 5 of their 
+                        interests based on the data, following these rules:
+                        
+                        - They MUST be QUALITY interests, NOT just frequently mentioned words.
+                        - Each interest must have a weight associated with its importance to 
+                          the user, adding up to 100
+                        - Each interest MUST be EXACTLY one word.
+                        - Capitalize the first letter of each interests.
+                        - Topics MUST be RELEVANT to the userbase, NOT general or random.
+                        - Output MUST be a JSON array with interests as strings WITHOUT a summary
+                        - DO NOT provide any backticks or unnecessary whitespace, just provide RAW
+                          JSON that can be dropped directly into code without any preprocessing
+
+                        Your second task will be to collect user opinion on a 
+                        list of trending topics, following these rules:
+
+                        - Weight each topic on a scale of -1 to 1, where -1 is highly likely to 
+                          interact negatively, and 1 is highly likely to interact positively. 
+                        - DO NOT provide any backticks or unnecessary whitespace, just provide RAW
+                          JSON that can be dropped directly into code without any preprocessing
+
+                        The data provided is as follows:
+                        
+                        {collected_user_data} {topics}
+                    """,
+                }
+            ],
+        )
+
+        interests = response.choices[0].message.content
+
+        # No need to jsonify the response since it's already properly formatted
+        return (interests, 200)
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
