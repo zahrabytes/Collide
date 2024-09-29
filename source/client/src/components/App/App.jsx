@@ -1,9 +1,10 @@
 import { Header } from "../Header/Header";
-import { Posts } from "../Posts/Posts";
 import { Profile } from "../Profile/Profile";
 import { TrendingTopics } from "../TrendingTopics/TrendingTopics";
 import { RecommendedUsers } from "../RecommendedUsers/RecommendedUsers";
+
 import styles from "./App.module.scss";
+import { CenterColumn } from "../CenterColumn/CenterColumn";
 
 function App() {
   return (
@@ -16,7 +17,7 @@ function App() {
             <Profile />
             <RecommendedUsers />
           </aside>
-          <Posts />
+          <CenterColumn />
           <section className={styles.right}>
             <TrendingTopics />
           </section>

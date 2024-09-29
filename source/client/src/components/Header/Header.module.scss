@@ -16,12 +16,25 @@
     cursor: pointer;
   }
 
+  .searchContainer {
+    position: relative;
+  }
+
+  .searchIcon {
+    position: absolute;
+    top: 50%;
+    left: 1.25em;
+    transform: translateY(-50%);
+    color: colors.$grey;
+    pointer-events: none;
+  }
+
   .search {
     width: 40em;
     height: 3em;
     border-radius: 0.75em;
     border: none;
-    padding: 1em 1.5em;
+    padding: 1em 1.5em 1em 3.25em;
     font-weight: 350;
     background: colors.$elevated1;
     color: colors.$foreground;
@@ -88,13 +101,7 @@
     }
   }
 
-  .divider {
-    width: 1px;
-    background: colors.$elevated3;
-  }
-
   .profile {
-    margin-left: 1.5em;
     display: flex;
     align-items: center;
     padding: 0.5em;

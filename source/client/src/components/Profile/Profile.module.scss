@@ -50,7 +50,7 @@
 .stats {
   display: flex;
   justify-content: space-around;
-  padding: 1.5em;
+  padding: 1em 1.5em;
   border-top: 1px solid lighten(colors.$elevated2, 10%);
   border-bottom: 1px solid lighten(colors.$elevated2, 10%);
 }

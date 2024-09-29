@@ -22,6 +22,10 @@ function TrendingTopics() {
     "Energy",
     "Gas",
     "Solar",
+    "Wind",
+    "Hydro",
+    "Nuclear",
+    "Coal",
   ];
   return (
     <div className={styles.container}>

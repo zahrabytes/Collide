@@ -1,59 +1,5 @@
 @use "../_colors" as colors;
 
-.posts {
-  display: flex;
-  flex-direction: column;
-  gap: 2em;
-}
-
-// .divider {
-//   height: 1px;
-//   background: colors.$elevated3;
-// }
-
-.chips {
-  display: flex;
-  gap: 1em;
-
-  div {
-    padding: 0.5em 1.75em;
-    border-radius: 5em;
-    font-size: 0.975em;
-    font-weight: 550;
-    cursor: pointer;
-    transition: 0.3s ease;
-
-    &:hover {
-      transform: scale(1.05);
-      filter: brightness(1.25);
-    }
-  }
-
-  .green {
-    background: linear-gradient(
-      45deg,
-      rgba(0, 243, 12, 0.71) 0%,
-      rgba(5, 147, 242, 0.97) 100%
-    );
-  }
-
-  .blue {
-    background: linear-gradient(
-      45deg,
-      rgba(5, 135, 242, 0.97) 0%,
-      rgba(172, 16, 239, 0.811) 100%
-    );
-  }
-
-  .orange {
-    background: linear-gradient(
-      45deg,
-      rgba(239, 172, 16, 0.811) 0%,
-      rgba(206, 11, 11, 0.886) 100%
-    );
-  }
-}
-
 .create {
   display: grid;
   grid-template-columns: auto 1fr;
@@ -79,7 +25,7 @@
     height: 3em;
     border-radius: 0.75em;
     border: none;
-    padding: 1em 1.5em;
+    padding: 1em 1.25em;
     font-weight: 350;
     background: colors.$elevated2;
     color: colors.$foreground;
@@ -106,7 +52,7 @@
     height: 10em;
     border-radius: 0.75em;
     border: none;
-    padding: 1em 1.5em;
+    padding: 1em 1.25em;
     font-weight: 350;
     background: colors.$elevated2;
     color: colors.$foreground;
@@ -145,25 +91,39 @@
     }
   }
 
-  .green {
-    color: #20da97;
+  .iconContainer {
+    position: relative;
+  }
+
+  %glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .greenIcon {
     border-radius: 100em;
-    box-shadow: 0 0 1em 1px rgba(#20da97, 0.1);
+    color: #20da97;
+    box-shadow: 0 0 0.75em 1px rgba(#20da97, 0.2);
   }
 
-  .blue {
+  .blueIcon {
+    border-radius: 100em;
     color: #4b93ff;
-    box-shadow: 0 0 1em 1px rgba(#4b93ff, 0.1);
+    box-shadow: 0 0 0.75em 1px rgba(#4b93ff, 0.2);
   }
 
-  .red {
+  .redIcon {
+    border-radius: 100em;
     color: #ff6a6a;
-    box-shadow: 0 0 1em 1px rgba(#ff6a6a, 0.1);
+    box-shadow: 0 0 0.75em 1px rgba(#ff6a6a, 0.2);
   }
 
-  .orange {
+  .orangeIcon {
+    border-radius: 100em;
     color: #fbc153;
-    box-shadow: 0 0 1em 1px rgba(#fbc153, 0.1);
+    box-shadow: 0 0 0.75em 1px rgba(#fbc153, 0.2);
   }
 
   .label {

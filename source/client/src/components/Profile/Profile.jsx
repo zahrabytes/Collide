@@ -19,7 +19,7 @@ function Profile() {
         <h2 className={styles.name}>Yeremias NJ</h2>
         <h3 className={styles.username}>@notojoyoo</h3>
         <p className={styles.bio}>
-          Lorem ipsum dolor sit amet, con secte tur adi piscing ✨
+          Lorem ipsum dolor sit amet, con secte tur adi piscing alt pan ✨
         </p>
       </div>
       <div className={styles.stats}>
@@ -35,7 +35,7 @@ function Profile() {
       </div>
       <p className={styles.bottom}>
         <a className={styles.link} href="#">
-          My Profile
+          View Profile
         </a>
       </p>
     </div>

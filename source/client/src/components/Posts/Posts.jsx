@@ -8,9 +8,9 @@ import { faNewspaper } from "@fortawesome/free-solid-svg-icons";
 import styles from "./Posts.module.scss";
 
 function Posts() {
-  const users = useFetchUsers(5);
+  const users = useFetchUsers(10);
   return (
-    <section className={styles.posts}>
+    <>
       <div className={styles.create}>
         <img
           className={styles.avatar}
@@ -28,36 +28,39 @@ function Posts() {
             placeholder="Add more detail..."
           ></textarea>
           <div className={styles.postType}>
-            <FontAwesomeIcon className={styles.green} icon={faCircleQuestion} />
+            <FontAwesomeIcon
+              className={styles.greenIcon}
+              icon={faCircleQuestion}
+            ></FontAwesomeIcon>
             <span className={styles.label}>Ask</span>
           </div>
           <div className={styles.postType}>
-            <FontAwesomeIcon className={styles.blue} icon={faComments} />
+            <FontAwesomeIcon
+              className={styles.blueIcon}
+              icon={faComments}
+            ></FontAwesomeIcon>
             <span className={styles.label}>Discuss</span>
           </div>
           <div className={styles.postType}>
             <FontAwesomeIcon
-              className={styles.red}
+              className={styles.redIcon}
               icon={faSquarePollVertical}
-            />
+            ></FontAwesomeIcon>
             <span className={styles.label}>Poll</span>
           </div>
           <div className={styles.postType}>
-            <FontAwesomeIcon className={styles.orange} icon={faNewspaper} />
+            <FontAwesomeIcon
+              className={styles.orangeIcon}
+              icon={faNewspaper}
+            ></FontAwesomeIcon>
             <span className={styles.label}>Blog</span>
           </div>
         </div>
       </div>
-      <div className={styles.chips}>
-        <div className={styles.green}>For You</div>
-        <div className={styles.blue}>Trending</div>
-        <div className={styles.orange}>Latest</div>
-      </div>
-      {/* <div className={styles.divider}></div> */}
       {users.map((user, index) => (
         <Post user={user} key={index} />
       ))}
-    </section>
+    </>
   );
 }
 
