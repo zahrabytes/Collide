@@ -65,6 +65,7 @@
     font-size: 0.925em;
     padding: 0.325em 1.35em;
     cursor: pointer;
+    transition: 0.3s ease;
 
     &:hover {
       filter: brightness(1.25);

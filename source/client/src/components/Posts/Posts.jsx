@@ -1,16 +1,12 @@
 import { Post } from "../Post/Post";
-import { useRecommendedPosts } from "../../hooks/useRecommendedPosts";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleQuestion } from "@fortawesome/free-solid-svg-icons";
 import { faComments } from "@fortawesome/free-solid-svg-icons";
 import { faSquarePollVertical } from "@fortawesome/free-solid-svg-icons";
 import { faNewspaper } from "@fortawesome/free-solid-svg-icons";
-import { useUser } from "../../hooks/useUser";
 import styles from "./Posts.module.scss";
 
-function Posts({ userId }) {
-  const user = useUser(userId);
-  const posts = useRecommendedPosts(userId);
+function Posts({ posts, user }) {
   return (
     <>
       <div className={styles.create}>
