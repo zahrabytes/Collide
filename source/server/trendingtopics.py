@@ -30,7 +30,7 @@ def get_user_collected_data(user_id: int) -> dict:
         with_vectors=False
     )
     
-    collected_post_result = client.scroll(
+    collected_comment_result = client.scroll(
         collection_name="comments",
         with_payload=True,
         with_vectors=False
@@ -41,7 +41,7 @@ def get_user_collected_data(user_id: int) -> dict:
         model="gpt-4o-mini",
         messages=[{
             "role": "user",
-            "content": f"This is collected data from a userbase. Give me a list of 20 trending topics (they must be quality topics, not just frequently mentioned words, two words each, in list separated by commas, without summarry): {collected_post_result} {collected_post_result}",
+            "content": f"This is collected data from a userbase. Give me a list of 20 trending topics (they must be quality topics, not just frequently mentioned words, two words each, in list separated by commas, without summarry): {collected_post_result} {collected_comment_result}",
         }],
     )
 
