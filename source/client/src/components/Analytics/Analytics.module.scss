@@ -1,0 +1,33 @@
+@use "../colors" as colors;
+
+%chartContaienr {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  padding: 1.5em;
+  border-radius: 1em;
+  background: colors.$elevated1;
+
+  .h2 {
+    font-size: 1.1em;
+    font-weight: 550;
+    text-align: center;
+  }
+}
+
+.barContainer {
+  @extend %chartContaienr;
+}
+
+.donutContainer {
+  @extend %chartContaienr;
+}
+
+.donutWrapper {
+  width: 66.67%;
+  margin: 0 auto;
+}
+
+.lineContainer {
+  @extend %chartContaienr;
+}

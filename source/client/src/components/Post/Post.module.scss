@@ -1,0 +1,141 @@
+@use "../colors" as colors;
+
+.post {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto 1fr;
+  column-gap: 1.5em;
+  row-gap: 1em;
+  padding: 1.5em;
+  background: colors.$elevated1;
+  border-radius: 1em;
+}
+
+.topLeft {
+  grid-column: 1 / 2;
+  grid-row: 1 / 2;
+
+  .avatar {
+    width: 3.25em;
+    border-radius: 50%;
+  }
+}
+
+.topRight {
+  grid-column: 2 / 3;
+  grid-row: 1 / 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.1em;
+
+  .topRow {
+    display: flex;
+    justify-content: space-between;
+
+    .name {
+      font-size: 1.15em;
+      font-weight: 400;
+    }
+
+    .username {
+      font-size: 1em;
+      font-weight: 400;
+      color: colors.$grey;
+    }
+  }
+
+  .user {
+    display: flex;
+    gap: 1em;
+  }
+
+  .time {
+    font-size: 0.95em;
+    color: colors.$grey;
+  }
+}
+
+.bottomRight {
+  grid-column: 2 / 3;
+  grid-row: 2 / 3;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5em;
+
+  .content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75em;
+
+    .title {
+      font-size: 1.25em;
+      font-weight: 600;
+      overflow: hidden;
+      display: -webkit-box;
+      line-clamp: 1;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+    }
+
+    .body {
+      overflow: hidden;
+      display: -webkit-box;
+      line-clamp: 4;
+      -webkit-line-clamp: 4;
+      -webkit-box-orient: vertical;
+    }
+  }
+
+  .postImage {
+    width: 100%;
+    border-radius: 0.5em;
+  }
+
+  .stats {
+    display: flex;
+    gap: 1em;
+
+    .stat {
+      display: flex;
+      gap: 0.5em;
+      align-items: center;
+    }
+
+    .iconContainer {
+      width: 2em;
+      height: 2em;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 50%;
+      padding: 0.1em;
+      font-size: 0.75em;
+    }
+
+    .red {
+      background: #f4506d;
+    }
+
+    .green {
+      background: #26ca98;
+    }
+
+    .blue {
+      background: #4a93ff;
+    }
+
+    .statNumber {
+      font-size: 0.9em;
+      font-weight: 600;
+      color: colors.$grey;
+    }
+  }
+
+  .actions {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr) auto;
+    grid-template-rows: auto;
+    gap: 0.5em;
+  }
+}
