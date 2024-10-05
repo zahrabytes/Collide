@@ -1,11 +1,12 @@
+import { useTrendingTopics } from "../../hooks/useTrendingTopics";
+import { useUsers } from "../../hooks/useUsers"; // Import the custom hook
+import { CenterColumn } from "../CenterColumn/CenterColumn";
 import { Header } from "../Header/Header";
 import { Profile } from "../Profile/Profile";
-import { TrendingTopics } from "../TrendingTopics/TrendingTopics";
 import { RecommendedUsers } from "../RecommendedUsers/RecommendedUsers";
-import { CenterColumn } from "../CenterColumn/CenterColumn";
-import { useTrendingTopics } from "../../hooks/useTrendingTopics";
-import { UserCard } from "../Admin/UserCard/UserCard";
-import { useFetchAllUsers } from "../../hooks/useFetchAllUsers"; // Import the custom hook
+import { TrendingTopics } from "../TrendingTopics/TrendingTopics";
+import { UserCard } from "../UserCard/UserCard";
+
 import styles from "./App.module.scss";
 
 function isNumberOrEmpty(variable) {
@@ -16,7 +17,7 @@ function App() {
   const path = window.location.pathname;
   const userId = path.split("/")[1];
 
-  const { users, loading, error } = useFetchAllUsers();
+  const { users, loading, error } = useUsers();
   const trendingTopics = useTrendingTopics();
 
   return (

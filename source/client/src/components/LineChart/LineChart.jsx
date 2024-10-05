@@ -1,15 +1,15 @@
-import React from "react";
-import { Line } from "react-chartjs-2";
 import {
-  Chart as ChartJS,
-  LineElement,
   CategoryScale,
+  Chart as ChartJS,
+  Legend,
   LinearScale,
+  LineElement,
   PointElement,
   Title,
   Tooltip,
-  Legend,
 } from "chart.js";
+import React from "react";
+import { Line } from "react-chartjs-2";
 
 const LineChart = () => {
   ChartJS.register(

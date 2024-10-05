@@ -1,14 +1,15 @@
+import { useUsers } from "../../hooks/useUsers"; // Import the custom hook
+import { CenterColumn } from "../CenterColumn/CenterColumn";
 import { Header } from "../Header/Header";
 import { Profile } from "../Profile/Profile";
-import { TrendingTopics } from "../TrendingTopics/TrendingTopics";
 import { RecommendedUsers } from "../RecommendedUsers/RecommendedUsers";
-import { CenterColumn } from "../CenterColumn/CenterColumn";
-import styles from "./App.module.scss";
-import { UserCard } from "../Admin/UserCard/UserCard";
-import { useFetchAllUsers } from "../../hooks/useFetchAllUsers"; // Import the custom hook
+import { TrendingTopics } from "../TrendingTopics/TrendingTopics";
+import { UserCard } from "../UserCard/UserCard";
+
+import styles from "../App/App.module.scss";
 
 function Admin() {
-  const { users, loading, error } = useFetchAllUsers(); // Fetch users, loading, and error
+  const { users, loading, error } = useUsers(); // Fetch users, loading, and error
 
   const path = window.location.pathname;
   const userId = path.split("/")[1];

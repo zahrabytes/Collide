@@ -1,0 +1,21 @@
+{
+    "topicsMatch": {
+        "AI": 0.5,
+        "Oil": 0.3,
+        "Upstream": -0.3,
+        "Production": 0.1,
+        "Operator": -0.2,
+        "Software": 0.8,
+        "Drilling": 0.2,
+        "Engineering": 0.1,
+        "Data": 0.4,
+        "Rig": -0.5
+    },
+    "interests": {
+        "AI": 50,
+        "Oil": 40,
+        "Software": 30,
+        "Engineering": 20,
+        "Data": 10
+    }
+}

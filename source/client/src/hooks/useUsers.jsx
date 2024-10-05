@@ -3,9 +3,11 @@ import { SERVER_BASE_ENDPOINT, USE_MOCK_DATA } from "./environmentVariables";
 
 import mockUsers from "../assets/json/mockUsers.json";
 
-function useRecommendedUsers(userId) {
-  const endpoint = `${SERVER_BASE_ENDPOINT}/user/${userId}/recommendedusers`;
+function useUsers() {
+  const endpoint = `${SERVER_BASE_ENDPOINT}/users`;
   const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     if (USE_MOCK_DATA) {
@@ -13,11 +15,13 @@ function useRecommendedUsers(userId) {
     } else {
       fetch(endpoint)
         .then((response) => response.json())
-        .then((posts) => setUsers(posts));
+        .then((data) => setUsers(data.users || data))
+        .catch((error) => setError(error));
     }
+    setLoading(false);
   }, [endpoint]);
 
-  return users;
+  return { users, loading, error };
 }
 
-export { useRecommendedUsers };
+export { useUsers };

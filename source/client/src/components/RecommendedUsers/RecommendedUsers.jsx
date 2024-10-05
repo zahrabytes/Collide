@@ -1,6 +1,6 @@
+import { useState } from "react";
 import { useRecommendedUsers } from "../../hooks/useRecommendedUsers";
 import { useUser } from "../../hooks/useUser";
-import { useState } from "react";
 import styles from "./RecommendedUsers.module.scss";
 
 function UserCard({ userId }) {

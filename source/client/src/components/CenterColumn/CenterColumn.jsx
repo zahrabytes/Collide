@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { Posts } from "../Posts/Posts";
-import { Analytics } from "../Analytics/Analytics";
-import { Summary } from "../Summary/Summary";
-import { useSummary } from "../../hooks/useSummary";
-import { useRecommendedPosts } from "../../hooks/useRecommendedPosts";
-import { useUser } from "../../hooks/useUser";
 import { useAnalytics } from "../../hooks/useAnalytics";
+import { useRecommendedPosts } from "../../hooks/useRecommendedPosts";
+import { useSummary } from "../../hooks/useSummary";
+import { useUser } from "../../hooks/useUser";
+import { Analytics } from "../Analytics/Analytics";
+import { Posts } from "../Posts/Posts";
+import { Summary } from "../Summary/Summary";
 import styles from "./CenterColumn.module.scss";
 
 function CenterColumn({ userId, trendingTopics }) {

@@ -1,13 +1,15 @@
+import {
+  faArrowUpFromBracket,
+  faBolt,
+  faComment,
+  faEllipsis,
+  faShare,
+  faThumbsDown,
+  faThumbsUp,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEllipsis } from "@fortawesome/free-solid-svg-icons";
-import { faBolt } from "@fortawesome/free-solid-svg-icons";
-import { faComment } from "@fortawesome/free-solid-svg-icons";
-import { faShare } from "@fortawesome/free-solid-svg-icons";
-import { faThumbsUp } from "@fortawesome/free-solid-svg-icons";
-import { faThumbsDown } from "@fortawesome/free-solid-svg-icons";
-import { faArrowUpFromBracket } from "@fortawesome/free-solid-svg-icons";
-import { Button } from "../ActionButton/ActionButton";
 import { useUser } from "../../hooks/useUser";
+import { Button } from "../ActionButton/ActionButton";
 import styles from "./Post.module.scss";
 
 const formatDate = (dateString) => {

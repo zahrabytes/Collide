@@ -1,16 +1,16 @@
-import { Bar } from "react-chartjs-2";
 import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
   BarElement,
+  CategoryScale,
+  Chart as ChartJS,
+  Legend,
+  LinearScale,
+  LineElement,
+  PointElement,
+  RadialLinearScale,
   Title,
   Tooltip,
-  Legend,
-  RadialLinearScale,
-  PointElement,
-  LineElement,
 } from "chart.js";
+import { Bar } from "react-chartjs-2";
 
 const BarChart = ({ topicsMatch }) => {
   ChartJS.register(

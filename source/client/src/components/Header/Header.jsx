@@ -1,16 +1,16 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faHome,
-  faBriefcase,
-  faRocket,
-  faUsers,
-  faInbox,
   faBell,
+  faBriefcase,
   faCaretDown,
+  faHome,
+  faInbox,
+  faRocket,
   faSearch,
+  faUsers,
 } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import logo from "../../assets/img/logo.svg";
 import styles from "./Header.module.scss";
-import logo from "../../assets/logo.svg";
 
 function Header() {
   return (
